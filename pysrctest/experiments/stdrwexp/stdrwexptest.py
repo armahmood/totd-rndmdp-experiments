@@ -13,6 +13,8 @@ class Test(unittest.TestCase):
   def testStdRandomWalkExp(self):
     sys.argv = ["", "1", "StdRWSparseReward", ""]
     stdrwexp.main()
+    sys.argv = ["", "1", "StdRWFreqReward", ""]
+    stdrwexp.main()
 
 if __name__ == "__main__":
   #import sys;sys.argv = ['', 'Test.testStdRandomWalkExp']
