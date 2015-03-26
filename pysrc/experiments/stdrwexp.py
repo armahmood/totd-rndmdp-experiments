@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.getcwd())))
 import argparse
 from pysrc.problems.stdrw import PerformanceMeasure
 from pysrc.problems.stdrwsparsereward import StdRWSparseReward
+from pysrc.problems.stdrwfreqreward import StdRWFreqReward
 import pysrc.algorithms.gtd as gtd 
 import pysrc.algorithms.wistd as wistd
 import pysrc.algorithms.wislstd as wislstd
@@ -39,6 +40,7 @@ def runoneconfig(config, prob, alg, perf):
 def main():
   parser          = argparse.ArgumentParser()
   parser.add_argument("run", help="used as a seed of an independent run", type=int)
+  parser.add_argument("probname", help="name of the problem to run experiment on")
   parser.add_argument("path", help="location of the config file")
   args = parser.parse_args()
 
@@ -55,8 +57,12 @@ def main():
            'wislstd':wislstd.WISLSTD,\
            'wistd':wistd.WISTD, \
            }
+  probs = {
+           'StdRWSparseReward'  : StdRWSparseReward,
+           'StdRWFreqReward'    : StdRWFreqReward,
+           }
   algname   = configs[0]['algname']
-  rw1prob   = StdRWSparseReward(configs[0])
+  rw1prob   = probs[args.probname](configs[0])
   perf      = PerformanceMeasure(configs[0], rw1prob)
   for config in configs:
     alg            = algs[algname](config)
