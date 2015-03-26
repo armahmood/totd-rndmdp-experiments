@@ -11,7 +11,7 @@ import pysrc.experiments.stdrwexp as stdrwexp
 class Test(unittest.TestCase):
 
   def testStdRandomWalkExp(self):
-    sys.argv = ["", "1", ""]
+    sys.argv = ["", "1", "StdRWSparseReward", ""]
     stdrwexp.main()
 
 if __name__ == "__main__":
