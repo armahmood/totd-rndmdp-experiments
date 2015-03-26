@@ -11,7 +11,6 @@ problem (see Mahmood, van Hasselt & Sutton 2014, nips) and runs an experiment.
 import os
 import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.getcwd()))) 
-import numpy as np
 import argparse
 from pysrc.problems.stdrw import PerformanceMeasure
 from pysrc.problems.stdrwsparsereward import StdRWSparseReward
@@ -38,30 +37,43 @@ def runoneconfig(config, prob, alg, perf):
       perf.calcMse(alg.th, ep)
       
 def main():
+  # parse command-line arguments
   parser          = argparse.ArgumentParser()
   parser.add_argument("run", help="used as a seed of an independent run", type=int)
   parser.add_argument("path", help="location of the config file")
   args = parser.parse_args()
+
+  # load the config file
   configpathname  = args.path + "config.pkl"
   cf              = open(configpathname, 'rb')
   configs         = pickle.load(cf)  
     
+  # prepare the file where data output is stored
   filepathname  = args.path + "run_"\
                   +str(args.run) + ".dat"
   f             = open(filepathname, 'wb')
+  
+  # list of algorithms allowed with this experiment
   algs  = {
            'gtd':gtd.GTD, \
            'wislstd':wislstd.WISLSTD,\
            'wistd':wistd.WISTD, \
            }
+  # choose the algorithm mentioned by the command line argument
   algname   = configs[0]['algname']
+  # choose the problem 
   rw1prob   = StdRWSparseReward(configs[0])
+  # initialize ther performance measurer
   perf      = PerformanceMeasure(configs[0], rw1prob)
+  # one-by-one each configuration is run 
   for config in configs:
+    # for each configuration, a new algorithm is initialized
+    alg            = algs[algname](config)
     config['runseed'] = args.run
-    gtdalg            = algs[algname](config)
-    runoneconfig(config, rw1prob, gtdalg, perf)
+    runoneconfig(config, rw1prob, alg, perf)
     config['mse']     = perf.mse
+    # performance is dumper together with the configuration
+    # in the same fie 
     pickle.dump(config, f, -1)
 
 if __name__ == '__main__':
