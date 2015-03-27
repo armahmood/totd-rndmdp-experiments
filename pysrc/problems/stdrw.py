@@ -221,11 +221,11 @@ class PerformanceMeasure(object):
   
   def __init__(self, params, prob):
     self.Phi            = prob.getPhi(params['ftype'], params['ns'])
-    thstar, self.VTrue  = prob.getthstarVTrue(params['ftype'], params['ns'], 
+    self.thstar, self.VTrue  = prob.getthstarVTrue(params['ftype'], params['ns'], 
                                                params['gamma'], 1, 
                                                params['inits'], params['mright'], 
                                                params['pright'])
-    self.VTrueProj      = np.dot(self.Phi, np.squeeze(np.array(thstar)))
+    self.VTrueProj      = np.dot(self.Phi, np.squeeze(np.array(self.thstar)))
     self.Psa            = prob.getPsa(params['ns'])
     self.initstateprob  = prob.getinitstateprob(
                                                 params['ns'], 

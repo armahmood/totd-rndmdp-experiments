@@ -62,12 +62,12 @@ def main():
            'StdRWFreqReward'    : StdRWFreqReward,
            }
   algname   = configs[0]['algname']
-  rw1prob   = probs[args.probname](configs[0])
-  perf      = PerformanceMeasure(configs[0], rw1prob)
+  rwprob   = probs[args.probname](configs[0])
+  perf      = PerformanceMeasure(configs[0], rwprob)
   for config in configs:
     alg            = algs[algname](config)
     config['runseed'] = args.run
-    runoneconfig(config, rw1prob, alg, perf)
+    runoneconfig(config, rwprob, alg, perf)
     config['mse']     = perf.mse
     pickle.dump(config, f, -1)
 
