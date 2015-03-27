@@ -1,7 +1,11 @@
 '''
 Created on Jun 2, 2014
 
-@author: ashique
+@author: A. Rupam Mahmood
+
+Implementation of GTD(lambda)
+by Maei (2011, Maei & Sutton 2010)
+
 '''
 
 import numpy as np
