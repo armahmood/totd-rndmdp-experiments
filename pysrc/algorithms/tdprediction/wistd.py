@@ -6,16 +6,15 @@ Created on Jun 2, 2014
 
 import numpy as np
 import pylab as pl
-from pysrc.algorithms.tdprediction.prediction import Prediction
+from pysrc.algorithms.tdprediction.tdprediction import TDPrediction
 
-class WISTD(Prediction):
+class WISTD(TDPrediction):
   
   def __init__(self, config):
     
-    self.nf     = config['nf']
+    TDPrediction.__init__(self,config)
     self.eta    = config['eta']
     self.initd  = config['initd']
-    self.th     = np.zeros(self.nf)
     self.z      = np.zeros(self.nf)
     self.u      = np.zeros(self.nf)
     self.d      = np.ones(self.nf)*self.initd

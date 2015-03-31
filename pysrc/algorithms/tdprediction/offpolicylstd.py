@@ -10,14 +10,13 @@ by Yu, (2010, Yu & Bertsekas 2009)
 
 import numpy as np
 import pylab as pl
-from pysrc.algorithms.tdprediction.prediction import Prediction
+from pysrc.algorithms.tdprediction.tdprediction import TDPrediction
 
-class OffPolicyLSTD(Prediction):
+class OffPolicyLSTD(TDPrediction):
   
   def __init__(self, config):
     
-    self.nf = config['nf']
-    self.th = np.zeros(self.nf)
+    TDPrediction.__init__(self,config)
     self.z = np.zeros(self.nf)
     self.inita = config['inita']
     self.A = np.eye(self.nf)*self.inita

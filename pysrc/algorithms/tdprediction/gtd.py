@@ -9,14 +9,13 @@ by Maei (2011, Maei & Sutton 2010)
 '''
 
 import numpy as np
-from pysrc.algorithms.tdprediction.prediction import Prediction
+from pysrc.algorithms.tdprediction.tdprediction import TDPrediction
 
-class GTD(Prediction):
+class GTD(TDPrediction):
   
   def __init__(self, config):
     
-    self.nf = config['nf']
-    self.th = np.zeros(self.nf)
+    TDPrediction.__init__(self,config)
     self.z = np.zeros(self.nf)
     self.w = np.zeros(self.nf)
     self.alpha = config['alpha']
