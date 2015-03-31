@@ -9,9 +9,9 @@ by Maei (2011, Maei & Sutton 2010)
 '''
 
 import numpy as np
-import pylab as pl
+from pysrc.algorithms.tdprediction.prediction import Prediction
 
-class GTD(object):
+class GTD(Prediction):
   
   def __init__(self, config):
     
@@ -36,5 +36,4 @@ class GTD(object):
     self.th += self.alpha*delta*self.z \
       - self.alpha*gnext*(1-lnext)*np.dot(self.z, self.w)*phinext
     self.w += self.beta*(delta*self.z - np.dot(phi, self.w)*phi)
-
 

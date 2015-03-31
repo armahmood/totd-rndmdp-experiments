@@ -6,8 +6,9 @@ Created on Jun 2, 2014
 
 import numpy as np
 import pylab as pl
+from pysrc.algorithms.tdprediction.prediction import Prediction
 
-class WISTD(object):
+class WISTD(Prediction):
   
   def __init__(self, config):
     

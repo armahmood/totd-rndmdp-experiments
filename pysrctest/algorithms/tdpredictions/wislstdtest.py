@@ -8,13 +8,13 @@ import unittest
 import numpy as np
 from pysrc.problems.stdrwsparsereward import StdRWSparseReward
 from pysrc.problems.stdrwfreqreward import StdRWFreqReward
-from pysrc.algorithms.offpolicylstd import OffPolicyLSTD
+from pysrc.algorithms.tdprediction.wislstd import WISLSTD
 import pysrc.experiments.stdrwexp as stdrwexp
 from pysrc.problems.stdrw import PerformanceMeasure
 
 class Test(unittest.TestCase):
 
-  def testoffpolicylstdonsparserewardtabular(self):
+  def testwislstdonsparserewardtabular(self):
     ns = 7
     config = {
               'neps'      : 3000,
@@ -29,7 +29,7 @@ class Test(unittest.TestCase):
               'lambda'    : 0.5,
               'inita'     : 0.01,
               }
-    alg         = OffPolicyLSTD(config)
+    alg         = WISLSTD(config)
     rwprob      = StdRWSparseReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
@@ -37,10 +37,10 @@ class Test(unittest.TestCase):
     print alg.th
     assert (abs(perf.thstar.T[0] - alg.th) < 0.01).all()
 
-  def testoffpolicylstdonsparserewardbinary(self):
+  def testwislstdonsparserewardbinary(self):
     ns = 7
     config = {
-              'neps'      : 3000,
+              'neps'      : 2000,
               'ftype'     : 'binary',
               'ns'        : ns,
               'inits'     : (ns-1)/2,
@@ -50,9 +50,9 @@ class Test(unittest.TestCase):
               'nf'        : int(np.ceil(np.log(ns-1)/np.log(2))),
               'gamma'     : 0.9,
               'lambda'    : 0.5,
-              'inita'     : 0.1,              
+              'inita'     : 0.01,              
               }
-    alg         = OffPolicyLSTD(config)
+    alg         = WISLSTD(config)
     rwprob      = StdRWSparseReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
@@ -60,7 +60,7 @@ class Test(unittest.TestCase):
     print alg.th
     assert (abs(perf.thstar.T[0] - alg.th) < 0.05).all()
 
-  def testoffpolicylstdonfreqrewardtabular(self):
+  def testwislstdonfreqrewardtabular(self):
     ns = 7
     config = {
               'neps'      : 2000,
@@ -75,7 +75,7 @@ class Test(unittest.TestCase):
               'lambda'    : 0.5,
               'inita'     : 0.1,              
               }
-    alg         = OffPolicyLSTD(config)
+    alg         = WISLSTD(config)
     rwprob      = StdRWFreqReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)

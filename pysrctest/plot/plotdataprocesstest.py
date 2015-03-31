@@ -16,20 +16,7 @@ class Test(unittest.TestCase):
     of configurations. In plotutil, it is obtained from different
     output files (based on different runs) and concatenated together. 
     This method can be used to avoid the need to have some already 
-    created output files. An example of the arguments it requires
-    is as follows:
-    
-    alphas  = np.array([0, 0.5, 1.0])
-    betas   = np.array([0, 0.1])
-    lmbdas = np.array([0, 0.99])
-    # Mse here is somewhat wrong. another dimension is required 
-    mse     = np.array([
-                        [[0.11,0.09], [0.41,0.39], [0.71,0.69], [1.01,1.09]],
-                        [[0.21,0.19], [0.51,0.49], [0.81,0.79], [1.11,1.09]],
-                        [[0.31,0.29], [0.61,0.59], [0.91,0.89], [1.21,1.19]]
-                        ]
-                       )
-    runs = np.array([1,2,3])
+    created output files.
     '''
     data = [
                {'mse'   : mse[alpha==alphas,beta==betas,lmbda==lmbdas]+run,

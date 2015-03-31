@@ -3,18 +3,19 @@ Created on Mar 27, 2015
 
 @author: A. Rupam Mahmood
 '''
+
 import unittest
 import numpy as np
 from pysrc.problems.stdrwsparsereward import StdRWSparseReward
 from pysrc.problems.stdrwfreqreward import StdRWFreqReward
-from pysrc.algorithms.gtd import GTD
+from pysrc.algorithms.tdprediction.offpolicylstd import OffPolicyLSTD
 import pysrc.experiments.stdrwexp as stdrwexp
 from pysrc.problems.stdrw import PerformanceMeasure
 
 class Test(unittest.TestCase):
 
-  def testgtdonsparserewardtabular(self):
-    ns = 13
+  def testoffpolicylstdonsparserewardtabular(self):
+    ns = 7
     config = {
               'neps'      : 3000,
               'ftype'     : 'tabular',
@@ -26,10 +27,9 @@ class Test(unittest.TestCase):
               'nf'        : ns-2,
               'gamma'     : 0.9,
               'lambda'    : 0.5,
-              'alpha'     : 0.005,
-              'beta'      : 0.0
+              'inita'     : 0.01,
               }
-    alg         = GTD(config)
+    alg         = OffPolicyLSTD(config)
     rwprob      = StdRWSparseReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
@@ -37,10 +37,10 @@ class Test(unittest.TestCase):
     print alg.th
     assert (abs(perf.thstar.T[0] - alg.th) < 0.01).all()
 
-  def testgtdonsparserewardbinary(self):
-    ns = 13
+  def testoffpolicylstdonsparserewardbinary(self):
+    ns = 7
     config = {
-              'neps'      : 2000,
+              'neps'      : 3000,
               'ftype'     : 'binary',
               'ns'        : ns,
               'inits'     : (ns-1)/2,
@@ -50,18 +50,17 @@ class Test(unittest.TestCase):
               'nf'        : int(np.ceil(np.log(ns-1)/np.log(2))),
               'gamma'     : 0.9,
               'lambda'    : 0.5,
-              'alpha'     : 0.0005,
-              'beta'      : 0.0
+              'inita'     : 0.1,              
               }
-    alg         = GTD(config)
+    alg         = OffPolicyLSTD(config)
     rwprob      = StdRWSparseReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
     print perf.thstar.T[0]
     print alg.th
-    assert (abs(perf.thstar.T[0] - alg.th) < 0.02).all()
+    assert (abs(perf.thstar.T[0] - alg.th) < 0.05).all()
 
-  def testgtdonfreqrewardtabular(self):
+  def testoffpolicylstdonfreqrewardtabular(self):
     ns = 7
     config = {
               'neps'      : 2000,
@@ -74,10 +73,9 @@ class Test(unittest.TestCase):
               'nf'        : ns-2,
               'gamma'     : 0.9,
               'lambda'    : 0.5,
-              'alpha'     : 0.005,
-              'beta'      : 0.0
+              'inita'     : 0.1,              
               }
-    alg         = GTD(config)
+    alg         = OffPolicyLSTD(config)
     rwprob      = StdRWFreqReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)

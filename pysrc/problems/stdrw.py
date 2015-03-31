@@ -238,8 +238,8 @@ class PerformanceMeasure(object):
     self.Dm             = prob.getD(params['ns'], self.Pm, self.initstateprob)
     self.mse            = np.zeros(params['neps'])
 
-  def calcMse(self, th, ep):
-    msediff         = np.dot(self.Phi, th) - self.VTrueProj
+  def calcMse(self, alg, ep):
+    msediff         = np.dot(self.Phi, alg.estimate()) - self.VTrueProj
     self.mse[ep]    = np.dot( np.dot(msediff, self.Dm), msediff)
     
   

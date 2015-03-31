@@ -15,9 +15,9 @@ import argparse
 from pysrc.problems.stdrw import PerformanceMeasure
 from pysrc.problems.stdrwsparsereward import StdRWSparseReward
 from pysrc.problems.stdrwfreqreward import StdRWFreqReward
-import pysrc.algorithms.gtd as gtd 
-import pysrc.algorithms.wistd as wistd
-import pysrc.algorithms.wislstd as wislstd
+import pysrc.algorithms.tdprediction.gtd as gtd
+import pysrc.algorithms.tdprediction.wistd as wistd
+import pysrc.algorithms.tdprediction.wislstd as wislstd
 import cPickle as pickle
 
 def runoneconfig(config, prob, alg, perf):
@@ -35,7 +35,7 @@ def runoneconfig(config, prob, alg, perf):
       probstep['lnext'] = config['lambda']
       probstep['rho']   = prob.getRho(s,a)
       alg.step(probstep)
-      perf.calcMse(alg.th, ep)
+      perf.calcMse(alg, ep)
       
 def main():
   parser          = argparse.ArgumentParser()
