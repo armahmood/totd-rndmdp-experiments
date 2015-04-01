@@ -6,15 +6,39 @@ Created on Mar 31, 2015
 import unittest
 import numpy as np
 from pysrc.problems.stdrwsparsereward import StdRWSparseReward
-from pysrc.algorithms.mcprediction.ois import OIS
+from pysrc.algorithms.mcprediction.wis import WIS
 from pysrc.problems.stdrw import PerformanceMeasure
 import pysrc.experiments.stdrwexp as stdrwexp
 
 class Test(unittest.TestCase):
 
-  def testOIS(self):
+  def testWISonpolicy(self):
     n       = 3
     neps    = 10
+    rewards         = np.array([1., 1., 1.])
+    rhos            = np.array([1., 1., 1.])
+    gammas          = np.array([1, 1, 0])
+    Phi             = np.zeros((n+2, n))
+    Phi[1:4,:]      = np.eye(n)
+    params          = {}
+    params['nf']    = n
+    params['ftype'] = 'tabular'
+    wis             = WIS(params)
+    for ep in range(neps):
+      wis.initepisode()
+      for t in range(n):
+        params['R']       = rewards[t]
+        params['phi']     = Phi[t+1]
+        params['phinext'] = Phi[t+2]
+        params['gnext']   = gammas[t]
+        params['rho']     = rhos[t]
+        wis.step(params)
+    assert((wis.V==np.array([3, 2, 1])).all())
+    assert((wis.U==neps*np.ones(n)).all())
+      
+  def testWIS(self):
+    n       = 3
+    neps    = 1
     rewards         = np.array([1., 1., 1.])
     rhos            = np.array([0., 1., 1.])
     gammas          = np.array([1, 1, 0])
@@ -23,24 +47,24 @@ class Test(unittest.TestCase):
     params          = {}
     params['nf']    = n
     params['ftype'] = 'tabular'
-    ois             = OIS(params)
+    wis             = WIS(params)
     for ep in range(neps):
-      ois.initepisode()
+      wis.initepisode()
       for t in range(n):
         params['R']       = rewards[t]
         params['phi']     = Phi[t+1]
         params['phinext'] = Phi[t+2]
         params['gnext']   = gammas[t]
         params['rho']     = rhos[t]
-        ois.step(params)
-    assert((ois.V==np.array([0, 2, 1])).all())
-    assert((ois.nvisits==neps*np.ones(n)).all())
-      
+        wis.step(params)
+    print(wis.V)
+    assert((wis.V==np.array([0, 2, 1])).all())
+    assert((wis.U==rhos).all())
 
-  def testOISonsparsereward(self):
+  def testWOISonsparsereward(self):
     ns = 7
     config = {
-              'neps'      : 3000,
+              'neps'      : 500,
               'ftype'     : 'tabular',
               'ns'        : ns,
               'inits'     : (ns-1)/2,
@@ -52,7 +76,7 @@ class Test(unittest.TestCase):
               'lambda'    : 0.5,
               'inita'     : 0.01,
               }
-    alg         = OIS(config)
+    alg         = WIS(config)
     rwprob      = StdRWSparseReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)

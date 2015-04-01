@@ -33,9 +33,9 @@ class Test(unittest.TestCase):
     rwprob      = StdRWSparseReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
-    print perf.thstar.T[0]
+    print perf.thstarMSE.T[0]
     print alg.th
-    assert (abs(perf.thstar.T[0] - alg.th) < 0.01).all()
+    assert (abs(perf.thstarMSE.T[0] - alg.th) < 0.01).all()
 
   def testgtdonsparserewardbinary(self):
     ns = 13
@@ -57,9 +57,9 @@ class Test(unittest.TestCase):
     rwprob      = StdRWSparseReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
-    print perf.thstar.T[0]
+    print perf.thstarMSPBE.T[0]
     print alg.th
-    assert (abs(perf.thstar.T[0] - alg.th) < 0.02).all()
+    assert (abs(perf.thstarMSPBE.T[0] - alg.th) < 0.02).all()
 
   def testgtdonfreqrewardtabular(self):
     ns = 7
@@ -81,9 +81,9 @@ class Test(unittest.TestCase):
     rwprob      = StdRWFreqReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
-    print perf.thstar.T[0]
+    print perf.thstarMSE.T[0]
     print alg.th
-    assert (abs(perf.thstar.T[0] - alg.th) < 0.05).all()
+    assert (abs(perf.thstarMSE.T[0] - alg.th) < 0.05).all()
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

@@ -33,14 +33,14 @@ class Test(unittest.TestCase):
     rwprob      = StdRWSparseReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
-    print perf.thstar.T[0]
+    print perf.thstarMSE.T[0]
     print alg.th
-    assert (abs(perf.thstar.T[0] - alg.th) < 0.01).all()
+    assert (abs(perf.thstarMSE.T[0] - alg.th) < 0.01).all()
 
   def testoffpolicylstdonsparserewardbinary(self):
     ns = 7
     config = {
-              'neps'      : 3000,
+              'neps'      : 2000,
               'ftype'     : 'binary',
               'ns'        : ns,
               'inits'     : (ns-1)/2,
@@ -56,9 +56,9 @@ class Test(unittest.TestCase):
     rwprob      = StdRWSparseReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
-    print perf.thstar.T[0]
+    print perf.thstarMSPBE.T[0]
     print alg.th
-    assert (abs(perf.thstar.T[0] - alg.th) < 0.05).all()
+    assert (abs(perf.thstarMSPBE.T[0] - alg.th) < 0.05).all()
 
   def testoffpolicylstdonfreqrewardtabular(self):
     ns = 7
@@ -79,9 +79,9 @@ class Test(unittest.TestCase):
     rwprob      = StdRWFreqReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
-    print perf.thstar.T[0]
+    print perf.thstarMSE.T[0]
     print alg.th
-    assert (abs(perf.thstar.T[0] - alg.th) < 0.05).all()
+    assert (abs(perf.thstarMSE.T[0] - alg.th) < 0.05).all()
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

@@ -7,7 +7,7 @@ Created on Mar 31, 2015
 import numpy as np
 from pysrc.algorithms.mcprediction.mcprediction import MCPrediction
 
-class OIS(MCPrediction):
+class WIS(MCPrediction):
   '''
   Ordinary importance sampling estimator.
   This class requires a full trajectory to be generated
@@ -20,8 +20,7 @@ class OIS(MCPrediction):
     '''
     
     MCPrediction.__init__(self, config)
-    
-    self.nvisits    = np.zeros(self.ns)
+    self.U          = np.zeros(self.ns)
     self.rewards    = []
     self.rhos       = []
     self.gammas     = []
@@ -48,10 +47,12 @@ class OIS(MCPrediction):
       W   = 1
       for t in np.arange(len(self.rewards)-1, -1, -1):
         G                   = self.gammas[t]*G + self.rewards[t]
-        W                  *= self.rhos[t]
+        W                   *= self.rhos[t]
         f_t                 = self.features[t]
-        self.nvisits[f_t==1]  += 1.0
-        self.V[f_t==1]        += (W*G - self.V[f_t==1])/self.nvisits[f_t==1]
+        self.U[f_t==1]      += W
+        U                   = self.U[f_t==1] if self.U[f_t==1]!=0 else 1
+        self.V[f_t==1]      += W*(G - self.V[f_t==1])/U
+        if W==0: return
         
 
 
