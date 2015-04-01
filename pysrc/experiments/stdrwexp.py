@@ -29,8 +29,6 @@ def runoneconfig(config, prob, alg, perf):
       probstep          = prob.step()
       s                 = probstep['s']
       a                 = probstep['act']
-      probstep['g']     = config['gamma']
-      probstep['gnext'] = config['gamma']
       probstep['l']     = config['lambda']
       probstep['lnext'] = config['lambda']
       probstep['rho']   = prob.getRho(s,a)

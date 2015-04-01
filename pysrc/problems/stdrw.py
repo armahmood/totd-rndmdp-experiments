@@ -54,8 +54,10 @@ class StdRandomWalk(object):
     fnext   = self.getfeatures(snext)
     stemp   = self.s
     self.s  = snext
+    gnext   = 0 if self.isterminal() else self.g
     return {'s':stemp, 'phi':f, 'act':act, \
-            'R':R, 'snext':snext, 'phinext':fnext}
+            'R':R, 'snext':snext, 'phinext':fnext, \
+            'g':self.g, 'gnext':gnext}
 
   def getfeatures(self, s):
     if self.ftype=='tabular':

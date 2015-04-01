@@ -73,7 +73,7 @@ class Test(unittest.TestCase):
               'runseed'   : 1,
               'nf'        : ns-2,
               'gamma'     : 0.9,
-              'lambda'    : 0.5,
+              'lambda'    : 1.0,
               'inita'     : 0.01,
               }
     alg         = WIS(config)
