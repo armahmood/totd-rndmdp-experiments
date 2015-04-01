@@ -57,8 +57,31 @@ class Test(unittest.TestCase):
         params['gnext']   = gammas[t]
         params['rho']     = rhos[t]
         wis.step(params)
-    print(wis.V)
     assert((wis.V==np.array([0, 2, 1])).all())
+    assert((wis.U==rhos).all())
+
+  def testWISZeroGamma(self):
+    n       = 3
+    neps    = 1
+    rewards         = np.array([0., 0., 1.])
+    rhos            = np.array([0., 0.5, 1.])
+    gammas          = np.array([0, 0, 0])
+    Phi             = np.zeros((n+2, n))
+    Phi[1:4,:]      = np.eye(n)
+    params          = {}
+    params['nf']    = n
+    params['ftype'] = 'tabular'
+    wis             = WIS(params)
+    for ep in range(neps):
+      wis.initepisode()
+      for t in range(n):
+        params['R']       = rewards[t]
+        params['phi']     = Phi[t+1]
+        params['phinext'] = Phi[t+2]
+        params['gnext']   = gammas[t]
+        params['rho']     = rhos[t]
+        wis.step(params)
+    assert((wis.V==np.array([0, 0, 1])).all())
     assert((wis.U==rhos).all())
 
   def testWOISonsparsereward(self):
@@ -74,7 +97,6 @@ class Test(unittest.TestCase):
               'nf'        : ns-2,
               'gamma'     : 0.9,
               'lambda'    : 1.0,
-              'inita'     : 0.01,
               }
     alg         = WIS(config)
     rwprob      = StdRWSparseReward(config)

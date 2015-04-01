@@ -52,6 +52,7 @@ class OIS(MCPrediction):
         f_t                 = self.features[t]
         self.nvisits[f_t==1]  += 1.0
         self.V[f_t==1]        += (W*G - self.V[f_t==1])/self.nvisits[f_t==1]
+      self.initepisode()
         
 
 

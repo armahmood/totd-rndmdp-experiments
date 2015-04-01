@@ -9,7 +9,7 @@ from pysrc.algorithms.mcprediction.mcprediction import MCPrediction
 
 class WIS(MCPrediction):
   '''
-  Ordinary importance sampling estimator.
+  Weighted importance sampling estimator.
   This class requires a full trajectory to be generated
   first in order to update its estimate.
   '''
@@ -52,8 +52,8 @@ class WIS(MCPrediction):
         self.U[f_t==1]      += W
         U                   = self.U[f_t==1] if self.U[f_t==1]!=0 else 1
         self.V[f_t==1]      += W*(G - self.V[f_t==1])/U
-        if W==0: return
-        
+        if W==0: break
+      self.initepisode()
 
 
 
