@@ -6,6 +6,7 @@ Created on Mar 31, 2015
 import unittest
 import numpy as np
 from pysrc.problems.stdrwsparsereward import StdRWSparseReward
+from pysrc.problems.stdrwfreqreward import StdRWFreqReward
 from pysrc.algorithms.mcprediction.wis import WIS
 from pysrc.problems.stdrw import PerformanceMeasure
 import pysrc.experiments.stdrwexp as stdrwexp
@@ -100,6 +101,28 @@ class Test(unittest.TestCase):
               }
     alg         = WIS(config)
     rwprob      = StdRWSparseReward(config)
+    perf      = PerformanceMeasure(config, rwprob)
+    stdrwexp.runoneconfig(config, rwprob, alg, perf)
+    print perf.thstarMSE.T[0]
+    print alg.V
+    assert (abs(perf.thstarMSE.T[0] - alg.V) < 0.05).all()
+
+  def testWISonfreqreward(self):
+    ns = 7
+    config = {
+              'neps'      : 3000,
+              'ftype'     : 'tabular',
+              'ns'        : ns,
+              'inits'     : (ns-1)/2,
+              'mright'    : 0.5,
+              'pright'    : 0.9,
+              'runseed'   : 1,
+              'nf'        : ns-2,
+              'gamma'     : 0.9,
+              'lambda'    : 1.0,
+              }
+    alg         = WIS(config)
+    rwprob      = StdRWFreqReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
     print perf.thstarMSE.T[0]
