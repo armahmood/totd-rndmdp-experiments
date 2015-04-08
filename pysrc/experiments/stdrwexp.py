@@ -41,7 +41,6 @@ def main():
   parser.add_argument("probname", help="name of the problem to run experiment on")
   parser.add_argument("path", help="location of the config file")
   args = parser.parse_args()
-
   configpathname  = args.path + "config.pkl"
   cf              = open(configpathname, 'rb')
   configs         = pickle.load(cf)  
@@ -62,6 +61,7 @@ def main():
   algname   = configs[0]['algname']
   rwprob   = probs[args.probname](configs[0])
   perf      = PerformanceMeasure(configs[0], rwprob)
+  print("Running algorithm " + algname + " on problem " + args.probname + ", runseed: " + str(args.run) )
   for config in configs:
     alg            = algs[algname](config)
     config['runseed'] = args.run

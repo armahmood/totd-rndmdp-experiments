@@ -5,15 +5,18 @@ Created on Mar 25, 2015
 '''
 import unittest
 import numpy as np
+import os
 import sys
 import pysrc.experiments.stdrwexp as stdrwexp
 
 class Test(unittest.TestCase):
 
   def testStdRandomWalkExp(self):
-    sys.argv = ["", "1", "StdRWSparseReward", "./pysrctest/experiments/stdrwexp/"]
+    dirpath  = "./pysrctest/experiments/stdrwexp/"
+    dirpath = "" if not os.path.isdir(dirpath) else dirpath
+    sys.argv = ["", "1", "StdRWSparseReward", dirpath]
     stdrwexp.main()
-    sys.argv = ["", "1", "StdRWFreqReward", "./pysrctest/experiments/stdrwexp/"]
+    sys.argv = ["", "1", "StdRWFreqReward", dirpath]
     stdrwexp.main()
 
 if __name__ == "__main__":

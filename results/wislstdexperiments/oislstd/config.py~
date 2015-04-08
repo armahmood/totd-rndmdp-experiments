@@ -12,7 +12,7 @@ def main():
   lms       = np.concatenate((np.arange(0, .9, .1), np.arange(.9, 1.01, .01)))
   configs     = [
                    {
-                   'algname'   : 'gtd',
+                   'algname'   : 'oislstd',
                    'gamma'     : 1.0,
                    'neps'      : 100,
                    'ftype'     : ftype,

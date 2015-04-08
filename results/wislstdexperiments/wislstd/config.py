@@ -8,11 +8,11 @@ def main():
   ftype       = 'binary'
   if ftype=='tabular':  nf = ns-2
   elif ftype=='binary': nf = int(np.ceil(np.log(ns-1)/np.log(2)))
-  initas    = 10**np.arange(-3, 4, .25)
-  lms       = np.concatenate((np.arange(0, .9, .1), np.arange(.9, 1.01, .01)))
+  initas    = 10**np.arange(-3, 4, 1.)
+  lms       = np.array([0, 0.5, 0.9, 0.95, 0.99, 1.0])
   configs     = [
                    {
-                   'algname'   : 'wislstd',
+                   'algname'   : 'oislstd',
                    'gamma'     : 1.0,
                    'neps'      : 100,
                    'ftype'     : ftype,
