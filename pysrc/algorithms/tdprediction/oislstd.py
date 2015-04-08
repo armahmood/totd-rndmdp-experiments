@@ -3,7 +3,7 @@ Created on Jun 2, 2014
 
 @author: A. Rupam Mahmood
 
-Implementation of off-policy-LSTD(lambda)
+Implementation of ordinary importance sampling (OIS) LSTD(lambda)
 by Yu, (2010, Yu & Bertsekas 2009)
 
 '''
@@ -12,7 +12,7 @@ import numpy as np
 import pylab as pl
 from pysrc.algorithms.tdprediction.tdprediction import TDPrediction
 
-class OffPolicyLSTD(TDPrediction):
+class OISLSTD(TDPrediction):
   
   def __init__(self, config):
     

@@ -15,9 +15,9 @@ import argparse
 from pysrc.problems.stdrw import PerformanceMeasure
 from pysrc.problems.stdrwsparsereward import StdRWSparseReward
 from pysrc.problems.stdrwfreqreward import StdRWFreqReward
-import pysrc.algorithms.tdprediction.gtd as gtd
-import pysrc.algorithms.tdprediction.wistd as wistd
-import pysrc.algorithms.tdprediction.wislstd as wislstd
+from pysrc.algorithms.tdprediction import oislstd
+from pysrc.algorithms.tdprediction import wislstd
+from pysrc.algorithms.tdprediction import gtd
 import cPickle as pickle
 
 def runoneconfig(config, prob, alg, perf):
@@ -51,9 +51,9 @@ def main():
   f             = open(filepathname, 'wb')
   
   algs  = {
-           'gtd':gtd.GTD, \
-           'wislstd':wislstd.WISLSTD,\
-           'wistd':wistd.WISTD, \
+           'oislstd':oislstd.OISLSTD,
+           'wislstd':wislstd.WISLSTD,
+           'gtd':gtd.GTD,
            }
   probs = {
            'StdRWSparseReward'  : StdRWSparseReward,

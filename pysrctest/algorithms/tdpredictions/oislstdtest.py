@@ -8,7 +8,7 @@ import unittest
 import numpy as np
 from pysrc.problems.stdrwsparsereward import StdRWSparseReward
 from pysrc.problems.stdrwfreqreward import StdRWFreqReward
-from pysrc.algorithms.tdprediction.offpolicylstd import OffPolicyLSTD
+from pysrc.algorithms.tdprediction.oislstd import OISLSTD
 import pysrc.experiments.stdrwexp as stdrwexp
 from pysrc.problems.stdrw import PerformanceMeasure
 
@@ -29,7 +29,7 @@ class Test(unittest.TestCase):
               'lambda'    : 0.5,
               'inita'     : 0.01,
               }
-    alg         = OffPolicyLSTD(config)
+    alg         = OISLSTD(config)
     rwprob      = StdRWSparseReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
@@ -52,7 +52,7 @@ class Test(unittest.TestCase):
               'lambda'    : 0.5,
               'inita'     : 0.1,              
               }
-    alg         = OffPolicyLSTD(config)
+    alg         = OISLSTD(config)
     rwprob      = StdRWSparseReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
@@ -75,7 +75,7 @@ class Test(unittest.TestCase):
               'lambda'    : 0.5,
               'inita'     : 0.1,              
               }
-    alg         = OffPolicyLSTD(config)
+    alg         = OISLSTD(config)
     rwprob      = StdRWFreqReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
