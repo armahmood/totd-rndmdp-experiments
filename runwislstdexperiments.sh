@@ -1,6 +1,9 @@
 #!/bin/bash
 
-python pysrc/experiments/stdrwexp.py 1 StdRWSparseReward results/wislstdexperiments/oislstd/ &
+for runseed in {1..10}
+do
+  python pysrc/experiments/stdrwexp.py $runseed StdRWSparseReward results/wislstdexperiments/oislstd/ &
 
-python pysrc/experiments/stdrwexp.py 1 StdRWSparseReward results/wislstdexperiments/wislstd/ &
+  python pysrc/experiments/stdrwexp.py $runseed StdRWSparseReward results/wislstdexperiments/wislstd/ &
 
+done

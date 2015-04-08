@@ -16,6 +16,7 @@ import numpy as np
 import cPickle as pickle
 import itertools
 import sys
+import argparse
 
 
 def loaddata(nruns, path):
@@ -98,10 +99,6 @@ def performancevsparams(tableavgstd, params, paramssub):
   return perftable
   
 def main():
-  nruns = 10
-  path        = "/Users/ashique/results/projects/wisOnexps/results/exprwbinary/wgtd/"
-  params      = np.array(['eta', 'initd', 'beta', 'lambda'])
-  paramssub   = np.array(['lambda'])
 
   if len(sys.argv)>1:
     nruns  = int(sys.argv[1])
@@ -110,7 +107,6 @@ def main():
     params = np.array([ sys.argv[4+i] for i in range(nparams) ])
     nparamssub = int(sys.argv[4+nparams]) 
     paramssub = np.array( [ sys.argv[4+nparams+1+i] for i in range(nparamssub) ] )
-  
   data        = loaddata(nruns, path)
   neps        = data[0]['neps']
   table       = createtable(data, params, neps)
