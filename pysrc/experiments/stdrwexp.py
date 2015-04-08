@@ -10,7 +10,7 @@ problem (see Mahmood, van Hasselt & Sutton 2014, nips) and runs an experiment.
 
 import os
 import sys
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.getcwd()))) 
+sys.path.insert(0, os.getcwd())
 import argparse
 from pysrc.problems.stdrw import PerformanceMeasure
 from pysrc.problems.stdrwsparsereward import StdRWSparseReward
