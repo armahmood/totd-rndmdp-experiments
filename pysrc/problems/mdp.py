@@ -7,7 +7,71 @@ Created on May 2, 2014
 
 import numpy as np
 import pylab as pl
+import random
 import matplotlib as mpl
+
+class MDP(object):
+  '''
+  It creates a generic MDP object.
+  Requires Pssa, Rssa and other structures to be specified.
+  '''
+  def __init__(self, params):
+    '''
+    Create all the necessary structure for the MDP
+    '''
+    self.ns         = params['ns']
+    self.na         = params['na']
+    self.ftype      = params['ftype'] # feature type
+    self.nf         = params['nf']
+    self.Rstd       = params['Rstd'] # std dev. for generating random rewards
+    self.initsdist  = params['initsdist'] # initial state distribution
+    self.Gamma      = params['Gamma'] # diagonal matrix of state-dependent gammas
+    self.mdpseed    = params['mdpseed'] # seed to generate mdps
+    self.rdmdp      = np.random.RandomState(self.mdpseed)
+    
+    self.Pssa       = self.getPssa()
+    self.Rssa       = self.getRssa()
+    self.bpol       = self.getBPolicy()
+    self.tpol       = self.getTPolicy()
+    
+    (self.Pssb, self.exprb) = getPolInducedModel(self.Pssa, self.Rssa, self.bpol)
+    (self.Psst, self.exprt) = getPolInducedModel(self.Pssa, self.Rssa, self.tpol)
+    self.Phi                = getPhi(self.ftype, self.ns, self.nf, rndobj=self.rdmdp)
+    self.dsb                = steadystateprob(self.Pssb)
+    if self.initsdist=='steadystate': self.initsdist = self.dsb
+
+  def getPssa(self, params):
+    raise NotImplementedError
+
+  def getRssa(self, params):
+    raise NotImplementedError
+
+  def getBPolicy(self):
+    raise NotImplementedError
+
+  def getTPolicy(self):
+    raise NotImplementedError
+
+  def initTrajectory(self, runseed):
+    self.rdrun    = np.random.RandomState(runseed)
+    self.s        = sampleFrom(self.initsdist, self.rdrun)
+
+  def step(self):
+    a = 0 if self.na==1 else getAction(self.bpol, self.s, self.rdrun)
+    snext   = getNextState(self.Pssa, self.s, a, self.rdrun)
+    noise   = self.rdrun.normal(0, self.Rstd) if self.Rstd>0 else 0.
+    R       = getReward(self.Rssa, self.s, snext, a) + noise
+    phi     = self.Phi[self.s]
+    phinext = self.Phi[snext]
+    g       = self.Gamma[self.s, self.s]
+    gnext   = self.Gamma[snext, snext]
+    stemp   = self.s
+    self.s  = snext
+    return {'s':stemp, 'phi':phi, 'act':a, \
+            'R':R, 'snext':snext, 'phinext':phinext, \
+            'g':g, 'gnext':gnext}
+
+
 
 ## general ergodic MDP, general gamma 
 ## Pssa is of s X s' X a form
@@ -94,8 +158,8 @@ def getFixedPoint(Pss, ExpR, Phi, ds, Gamma, Lmbda):
   PhiTD = np.dot(Phi.T, D)
   ImPG = np.eye(ns) - np.dot(Pss, Gamma)
   A = np.dot(np.dot(PhiTD, ImPGLinv), np.dot(ImPG, Phi))
-  b = np.dot(PhiTD, np.dot(ImPGLinv, ExpR)) 
-  thstar = np.dot(pl.pinv(A), b)
+  b = np.dot(PhiTD, np.dot(ImPGLinv, ExpR))
+  thstar = np.dot(pl.inv(A), b)
   return thstar
 
 def getRandomlySampledPolicy(ns, na, rndobj, coverage=True):

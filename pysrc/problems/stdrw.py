@@ -8,7 +8,6 @@ Created on Mar 25, 2015
 import numpy as np
 import pylab as pl
 import random
-from matplotlib.cbook import Null
 
 class StdRandomWalk(object):
   '''

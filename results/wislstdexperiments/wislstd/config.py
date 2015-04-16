@@ -12,7 +12,7 @@ def main():
   lms       = np.array([0, 0.5, 0.9, 0.95, 0.99, 1.0])
   configs     = [
                    {
-                   'algname'   : 'oislstd',
+                   'algname'   : 'wislstd',
                    'gamma'     : 1.0,
                    'neps'      : 100,
                    'ftype'     : ftype,
