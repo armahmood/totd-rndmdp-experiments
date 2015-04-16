@@ -32,7 +32,7 @@ class SimpleTwoState(mdp.MDP):
     Rssa        = np.zeros((2, 2, 2))
     L           = 0
     R           = 1
-    Rssa[L,L,L] = 0.
+    Rssa[L,L,L] = -1
     Rssa[L,R,R] = 0.
     Rssa[R,L,L] = 0.
     Rssa[R,R,R] = 1. 
@@ -42,6 +42,6 @@ class SimpleTwoState(mdp.MDP):
     return mdp.getUniformRandomPolicy(self.ns, self.na)
   
   def getTPolicy(self):
-    return np.array([[0.01, 0.99], [0.01, 0.99]])
+    return np.array([[0.1, 0.9], [0.1, 0.9]])
 
   

@@ -5,9 +5,10 @@ Created on Mar 27, 2015
 '''
 import unittest
 import numpy as np
+import pylab as pl
 from pysrc.problems.stdrwsparsereward import StdRWSparseReward
 from pysrc.problems.stdrwfreqreward import StdRWFreqReward
-from pysrc.algorithms.tdprediction.gtd import GTD
+from pysrc.algorithms.tdprediction.etd import ETD
 import pysrc.experiments.stdrwexp as stdrwexp
 from pysrc.problems.stdrw import PerformanceMeasure
 from pysrc.problems import mdp
@@ -31,7 +32,7 @@ class Test(unittest.TestCase):
               'alpha'     : 0.005,
               'beta'      : 0.0
               }
-    alg         = GTD(config)
+    alg         = ETD(config)
     rwprob      = StdRWSparseReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
@@ -55,14 +56,14 @@ class Test(unittest.TestCase):
               'alpha'     : 0.0005,
               'beta'      : 0.0
               }
-    alg         = GTD(config)
+    alg         = ETD(config)
     rwprob      = StdRWSparseReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
     print perf.thstarMSPBE.T[0]
     print alg.th
     assert (abs(perf.thstarMSPBE.T[0] - alg.th) < 0.02).all()
-
+   
   def testgtdonfreqrewardtabular(self):
     ns = 7
     config = {
@@ -79,37 +80,35 @@ class Test(unittest.TestCase):
               'alpha'     : 0.005,
               'beta'      : 0.0
               }
-    alg         = GTD(config)
+    alg         = ETD(config)
     rwprob      = StdRWFreqReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
     print perf.thstarMSE.T[0]
     print alg.th
-    assert (abs(perf.thstarMSE.T[0] - alg.th) < 0.05).all()
+    assert (abs(perf.thstarMSE.T[0] - alg.th) < 0.06).all()
 
-  def testGtdOnSimpleTwoStateFuncApprox(self):
+  def testEtdOnSimpleTwoStateTabular(self):
     config = \
     {
-      'nf'        : 1,
-      'ftype'     : None,
+      'nf'        : 2,
+      'ftype'     : 'tabular',
       'Rstd'      : 0.0,
       'initsdist' : 'steadystate',
       'Gamma'     : 0.9*np.eye(2),
       'mdpseed'   : 1000,
-      'lambda'    : 0.,
-      'alpha'     : 0.0005,
-      'beta'      : 0.0
+      'lambda'    : 0.5,
+      'alpha'     : 0.00005,
     }
-    T         = 100000
-    prob      = SimpleTwoState(config)
-    prob.Phi  = np.array([[1], [1]])
-    alg       = GTD(config)
+    T       = 300000
+    prob    = SimpleTwoState(config)
+    alg     = ETD(config)
     ''' Test fixed points '''
     
     # off-policy fixed point
     thstar3 = mdp.getFixedPoint(prob.Psst, prob.exprt,\
                       prob.Phi, prob.dsb,\
-                      prob.Gamma, config['lambda'])
+                      prob.Gamma, 1.)
     print(thstar3)
     
     runseed = 0
@@ -123,8 +122,62 @@ class Test(unittest.TestCase):
       probstep['rho']   = prob.getRho(s,a)
       alg.step(probstep)
     print(alg.th)
-    assert((abs(thstar3-alg.th)<0.06).all())
- 
+    assert((abs(thstar3-alg.th)<0.1).all())
+
+  def testEtdOnSimpleTwoStateFuncApprox(self):
+    lmbda   = 0.
+    config  = \
+    {
+      'nf'        : 1,
+      'ftype'     : None,
+      'Rstd'      : 0.0,
+      'initsdist' : 'steadystate',
+      'Gamma'     : 0.9*np.eye(2),
+      'mdpseed'   : 1000,
+      'lambda'    : lmbda,
+      'alpha'     : 0.00005,
+    }
+    T         = 100000
+    prob      = SimpleTwoState(config)
+    prob.Phi  = np.array([[1], [1]])
+    alg       = ETD(config)
+    ''' Test fixed points '''
+    
+    # target on-policy fixed point
+    thstar0 = mdp.getFixedPoint(prob.Psst, prob.exprt,\
+                      prob.Phi, mdp.steadystateprob(prob.Psst),\
+                      prob.Gamma, 1.)
+    print thstar0
+
+    # off-policy fixed point
+    thstar1 = mdp.getFixedPoint(prob.Psst, prob.exprt,\
+                      prob.Phi, prob.dsb,\
+                      prob.Gamma, config['lambda'])
+    print(thstar1)
+    
+    # emphatic fixed point
+    ImPG    = np.eye(prob.ns) - np.dot(prob.Psst, prob.Gamma)
+    ImPLG   = np.eye(prob.ns) - np.dot(lmbda*prob.Psst, prob.Gamma)
+    ImPL    = np.dot( pl.inv(ImPLG), ImPG )
+    m       = np.dot(prob.dsb.T, pl.inv(ImPL))
+    thstar2 = mdp.getFixedPoint(prob.Psst, prob.exprt,\
+                      prob.Phi, m,\
+                      prob.Gamma, lmbda)
+    print(thstar2)
+    
+    runseed = 0
+    prob.initTrajectory(runseed)
+    for t in range(T):
+      probstep  = prob.step()
+      s                 = probstep['s']
+      a                 = probstep['act']
+      probstep['l']     = config['lambda']
+      probstep['lnext'] = config['lambda']
+      probstep['rho']   = prob.getRho(s,a)
+      alg.step(probstep)
+    print(alg.th)
+    assert((abs(thstar2-alg.th)<0.1).all())
+            
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

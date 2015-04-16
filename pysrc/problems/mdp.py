@@ -71,6 +71,8 @@ class MDP(object):
             'R':R, 'snext':snext, 'phinext':phinext, \
             'g':g, 'gnext':gnext}
 
+  def getRho(self, s, a):
+    return self.tpol[s,a]/self.bpol[s,a]
 
 
 ## general ergodic MDP, general gamma 
