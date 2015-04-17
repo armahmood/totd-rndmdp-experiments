@@ -16,7 +16,7 @@ from pysrc.problems.simpletwostate import SimpleTwoState
 
 class Test(unittest.TestCase):
 
-  def testgtdonsparserewardtabular(self):
+  def testetdonsparserewardtabular(self):
     ns = 13
     config = {
               'neps'      : 3000,
@@ -40,7 +40,7 @@ class Test(unittest.TestCase):
     print alg.th
     assert (abs(perf.thstarMSE.T[0] - alg.th) < 0.01).all()
 
-  def testgtdonsparserewardbinary(self):
+  def testetdonsparserewardbinary(self):
     ns = 13
     config = {
               'neps'      : 2000,
@@ -64,7 +64,7 @@ class Test(unittest.TestCase):
     print alg.th
     assert (abs(perf.thstarMSPBE.T[0] - alg.th) < 0.02).all()
    
-  def testgtdonfreqrewardtabular(self):
+  def testetdonfreqrewardtabular(self):
     ns = 7
     config = {
               'neps'      : 2000,
@@ -135,9 +135,10 @@ class Test(unittest.TestCase):
       'Gamma'     : 0.9*np.eye(2),
       'mdpseed'   : 1000,
       'lambda'    : lmbda,
-      'alpha'     : 0.00005,
+      'alpha'     : 0.0001,
     }
-    T         = 100000
+    T         = 10000
+    nruns     = 1
     prob      = SimpleTwoState(config)
     prob.Phi  = np.array([[1], [1]])
     alg       = ETD(config)
@@ -165,19 +166,81 @@ class Test(unittest.TestCase):
                       prob.Gamma, lmbda)
     print(thstar2)
     
-    runseed = 0
-    prob.initTrajectory(runseed)
-    for t in range(T):
-      probstep  = prob.step()
-      s                 = probstep['s']
-      a                 = probstep['act']
-      probstep['l']     = config['lambda']
-      probstep['lnext'] = config['lambda']
-      probstep['rho']   = prob.getRho(s,a)
-      alg.step(probstep)
-    print(alg.th)
-    assert((abs(thstar2-alg.th)<0.1).all())
-            
+    ths   = np.zeros((nruns, config['nf']))
+    for runseed in range(nruns): 
+      prob.initTrajectory(runseed)
+      for t in range(T):
+        probstep  = prob.step()
+        s                 = probstep['s']
+        a                 = probstep['act']
+        probstep['l']     = config['lambda']
+        probstep['lnext'] = config['lambda']
+        probstep['rho']   = prob.getRho(s,a)
+        alg.step(probstep)
+      ths[runseed]  = alg.th
+      meanth        = np.mean(ths, 0)
+    print(meanth)
+    assert((abs(thstar2-meanth)<0.1).all())
+
+  def testEtdOnSimpleTwoStateFuncApprox2(self):
+    lmbda   = 0.
+    config  = \
+    {
+      'nf'        : 1,
+      'ftype'     : None,
+      'Rstd'      : 0.0,
+      'initsdist' : 'steadystate',
+      'Gamma'     : 0.9*np.eye(2),
+      'mdpseed'   : 1000,
+      'lambda'    : lmbda,
+      'alpha'     : 0.005,
+    }
+    T         = 1000
+    nruns     = 30
+    prob      = SimpleTwoState(config)
+    prob.Phi  = np.array([[1], [1]])
+    alg       = ETD(config)
+    ''' Test fixed points '''
+    
+    # target on-policy fixed point
+    thstar0 = mdp.getFixedPoint(prob.Psst, prob.exprt,\
+                      prob.Phi, mdp.steadystateprob(prob.Psst),\
+                      prob.Gamma, 1.)
+    print thstar0
+
+    # off-policy fixed point
+    thstar1 = mdp.getFixedPoint(prob.Psst, prob.exprt,\
+                      prob.Phi, prob.dsb,\
+                      prob.Gamma, config['lambda'])
+    print(thstar1)
+    
+    # emphatic fixed point
+    ImPG    = np.eye(prob.ns) - np.dot(prob.Psst, prob.Gamma)
+    ImPLG   = np.eye(prob.ns) - np.dot(lmbda*prob.Psst, prob.Gamma)
+    ImPL    = np.dot( pl.inv(ImPLG), ImPG )
+    m       = np.dot(prob.dsb.T, pl.inv(ImPL))
+    thstar2 = mdp.getFixedPoint(prob.Psst, prob.exprt,\
+                      prob.Phi, m,\
+                      prob.Gamma, lmbda)
+    print(thstar2)
+    
+    ths   = np.zeros((nruns, config['nf']))
+    for runseed in range(nruns): 
+      prob.initTrajectory(runseed)
+      for t in range(T):
+        probstep  = prob.step()
+        s                 = probstep['s']
+        a                 = probstep['act']
+        probstep['l']     = config['lambda']
+        probstep['lnext'] = config['lambda']
+        probstep['rho']   = prob.getRho(s,a)
+        probstep['I']     = 1 if t==0 else 0
+        alg.step(probstep)
+      ths[runseed]  = alg.th
+      meanth        = np.mean(ths, 0)
+    print(meanth)
+    #assert((abs(3.84323647-meanth)<0.1).all())
+                        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

@@ -22,7 +22,6 @@ class Test(unittest.TestCase):
       'Gamma'     : 0.9*np.eye(2),
       'mdpseed'   : 1000,
     }
-    T       = 10000
     prob    = SimpleTwoState(config)
     
     ''' Test fixed points '''
@@ -46,16 +45,7 @@ class Test(unittest.TestCase):
                       prob.Gamma, 1.)
     print(thstar3)
     assert((abs(thstar2-thstar3)<10**-10).all())
-    
-    runseed = 0
-    prob.initTrajectory(runseed)
-    eds = np.zeros(2)
-    for t in range(T):
-      eds[prob.s]  += 1.
-      prob.step()
-    eds = eds/(np.sum(eds))
-    assert((abs(eds-prob.dsb)<0.05).all())
-        
+            
   def testSimpleTwoStateFuncApprox(self):
     config = \
     {
@@ -66,7 +56,6 @@ class Test(unittest.TestCase):
       'Gamma'     : 0.9*np.eye(2),
       'mdpseed'   : 1000,
     }
-    T       = 10000
     prob    = SimpleTwoState(config)
     prob.Phi = np.array([[1], [1]])
     
@@ -91,16 +80,49 @@ class Test(unittest.TestCase):
                       prob.Gamma, 1.)
     print thstar3
     assert((abs(thstar3-np.array([7.6]))<10**-10).all())    
-    
+
+  def testSteadyState(self):     
+    config = \
+    {
+      'nf'        : 2,
+      'ftype'     : 'tabular',
+      'fs'        : 2,
+      'Rstd'      : 0.0,
+      'initsdist' : 'steadystate',
+      'Gamma'     : 0.9*np.eye(2),
+      'mdpseed'   : 1000,
+    }
+    [eds, dsb] = self.getEmpiricalSteadyState(config)
+    print(eds)
+    assert((abs(eds-dsb)<0.05).all())
+
+    config = \
+    {
+      'nf'        : 2,
+      'ftype'     : 'tabular',
+      'fs'        : 2,
+      'Rstd'      : 0.0,
+      'initsdist' : np.array([0.9,.1]),
+      'Gamma'     : 0.9*np.eye(2),
+      'mdpseed'   : 1000,
+    }
+    [eds, dsb] = self.getEmpiricalSteadyState(config)
+    print(eds)
+    assert((abs(eds-dsb)<0.05).all())
+
+  @staticmethod
+  def getEmpiricalSteadyState(config):
     runseed = 0
+    T       = 10000
+    prob    = SimpleTwoState(config)
     prob.initTrajectory(runseed)
     eds = np.zeros(2)
     for t in range(T):
       eds[prob.s]  += 1.
       prob.step()
     eds = eds/(np.sum(eds))
-    assert((abs(eds-prob.dsb)<0.05).all())
-
+    return [eds, prob.dsb]
+  
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
