@@ -10,21 +10,22 @@ from matplotlib import pyplot as ppl
 import copy
 
 class BlindBeeTest2(object):
-  NEPS = 5000
+  NEPS = 10000
 
   @staticmethod
   def episodes(params, neps):
-    prob            = blindbee.BlindBee(params)
+    policy  = params['policy']
+    state   = blindbee.BlindBeeState(params)
     displacement    = [0.]
-    ntraps          = 0
-    while ntraps<neps:
-      prob.initEpisode()
-      while not prob.state.isTerminal() and ntraps<neps:
-        prob.step()
-        displacement[ntraps] += prob.state.updisplacement
-        if prob.state.inTrap():
-          displacement.append(0.) 
-          ntraps += 1
+    trap            = 0
+    while trap<neps:
+      a           = policy.getAction(state)
+      state.getNextState(a)
+      displacement[trap] += state.updisplacement
+      if state.inTrap():
+        displacement.append(0.)
+        trap += 1 
+      state.checkState()
           
     displacement = np.array(displacement[:-1]) 
     
@@ -38,46 +39,71 @@ class BlindBeeTest2(object):
     
   @staticmethod
   def getparams():
-    params = {'runseed':1, 
-      'nrows':10, 
-      'ncols':10, 
-      'trapprob':0.1, 
-      'trapduralim':5}
+    rdrun   = np.random.RandomState(1)
+    params  = {'rdrun':rdrun,
+      'nrows':4, 
+      'ncols':4, 
+      'trapprob':0.4, 
+      'trapduralim':2}
     return params
 
   def testUniformPolicy(self):
     neps              = self.NEPS
     params            = self.getparams()
-    params['policy']  = 'uniform'
+    params['policy']  = blindbee.UniformPolicy(params)
     print("testUniformPolicy")
     self.episodes(params, neps)
 
   def testUpwardPolicy(self):
     neps = self.NEPS
     params = self.getparams()
-    params['policy']  = 'upward'
+    params['policy']  = blindbee.UpwardPolicy(params)
     print("testUpwardPolicy")
+    self.episodes(params, neps)
+
+  def testUpward2Policy(self):
+    neps = self.NEPS
+    params = self.getparams()
+    params['policy']  = blindbee.Upward2Policy(params)
+    print("testUpward2Policy")
     self.episodes(params, neps)
 
   def testUpwardishPolicy(self):
     neps = self.NEPS
     params = self.getparams()
-    params['policy']  = 'upwardish'
+    params['policy']  = blindbee.UpwardishPolicy(params)
     print("testUpwardishPolicy")
     self.episodes(params, neps)
 
   def testSmartPolicy(self):
     neps = self.NEPS
     params = self.getparams()
-    params['policy']  = 'smart'
+    params['policy']  = blindbee.SmartPolicy(params)
     print("testSmartPolicy")
+    self.episodes(params, neps)
+
+  def testSmart2Policy(self):
+    neps = self.NEPS
+    params = self.getparams()
+    params['policy']  = blindbee.Smart2Policy(params)
+    print("testSmart2Policy")
+    self.episodes(params, neps)
+
+  def testSmart3Policy(self):
+    neps = self.NEPS
+    params = self.getparams()
+    params['policy']  = blindbee.Smart3Policy(params)
+    print("testSmart3Policy")
     self.episodes(params, neps)
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     #unittest.main()
     test = BlindBeeTest2()
+    #test.testUpwardPolicy()
+    test.testUpward2Policy()
+    #test.testUpwardishPolicy()
+    test.testSmart3Policy()
+    #test.testSmart2Policy()
+    #test.testSmartPolicy()
     test.testUniformPolicy()
-    test.testUpwardPolicy()
-    test.testUpwardishPolicy()
-    test.testSmartPolicy()

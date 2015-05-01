@@ -7,79 +7,89 @@ import unittest
 import numpy as np
 from pysrc.problems import blindbee
 from matplotlib import pyplot as ppl
+import copy
 
 class BlindBeeTest(object):
   NEPS = 2000
   def testblindbee(self):
-    params    = {
-                 'runseed'      :1,
-                 'policy'       :'upward',
+    rdrun   = np.random.RandomState(1)
+    params  = {'rdrun':rdrun,
                  'nrows'        :4,
                  'ncols'        :4,
-                 'trapprob'     :1,
-                 'trapduralim'  :20,
+                 'trapprob'     :0.1,
+                 'trapduralim'  :2,
                  }
-    prob      = blindbee.BlindBee(params)
-    neps      = 3
-    for ep in range(neps):
-      prob.initEpisode()
-      prob.state.printState()
-      while not prob.state.isTerminal():
-        prob.step()
-        prob.state.printState()
+    params['policy'] = blindbee.UniformPolicy(params)
+    neps    = 3
+    policy  = params['policy']
+    state   = blindbee.BlindBeeState(params)
+    state.printState()
+    ep      = 0
+    while ep < neps:
+      a     = policy.getAction(state)
+      state.getNextState(a)
+      state.printState()
+      if state.isTerminal():
+        ep    += 1
+      state.checkState()
 
   @staticmethod
   def episodes(params, neps):
-    prob = blindbee.BlindBee(params)
-    steps = np.zeros(neps)
-    for ep in range(neps):
-      prob.initEpisode()
-      while not prob.state.isTerminal():
-        prob.step()
-        steps[ep] += 1
+    policy  = params['policy']
+    state   = blindbee.BlindBeeState(params)
+    steps   = np.zeros(neps+1)
+    ep      = 0
+    while ep<neps:
+      a           = policy.getAction(state)
+      state.getNextState(a)
+      steps[ep] += 1
+      if state.isTerminal():
+        ep    += 1
+      state.checkState()
     
     cummean = lambda x:x.cumsum() / np.arange(1, len(x) + 1)
     cumstd = lambda x:cummean(x ** 2) - cummean(x) ** 2
     cumstdrr = lambda x:cumstd(x) / np.arange(1, len(x) + 1)
-    xs = np.arange(1, len(steps) + 1, 20)
+    xs = np.arange(1, neps + 1, 20)
     ppl.errorbar(xs, cummean(steps)[xs], cumstdrr(steps)[xs])
-    print cummean(steps)[-1]
+    print cummean(steps)[neps]
     ppl.show()
 
   @staticmethod
   def getparams():
-    params = {'runseed':1, 
+    rdrun   = np.random.RandomState(1)
+    params  = {'rdrun':rdrun,
       'nrows':10, 
       'ncols':10, 
-      'trapprob':0.75, 
+      'trapprob':0.1, 
       'trapduralim':10}
     return params
 
   def testUniformPolicy(self):
     neps              = self.NEPS
     params            = self.getparams()
-    params['policy']  = 'uniform'
+    params['policy']  = blindbee.UniformPolicy(params)
     print("testUniformPolicy")
     self.episodes(params, neps)
 
   def testUpwardPolicy(self):
     neps = self.NEPS
     params = self.getparams()
-    params['policy']  = 'upward'
+    params['policy']  = blindbee.UpwardPolicy(params)
     print("testUpwardPolicy")
     self.episodes(params, neps)
 
   def testUpwardishPolicy(self):
     neps = self.NEPS
     params = self.getparams()
-    params['policy']  = 'upwardish'
+    params['policy']  = blindbee.UpwardishPolicy(params)
     print("testUpwardishPolicy")
     self.episodes(params, neps)
 
   def testSmartPolicy(self):
     neps = self.NEPS
     params = self.getparams()
-    params['policy']  = 'smart'
+    params['policy']  = blindbee.SmartPolicy(params)
     print("testSmartPolicy")
     self.episodes(params, neps)
 
@@ -89,7 +99,7 @@ if __name__ == "__main__":
     test = BlindBeeTest()
     test.testblindbee()
     test.testUpwardPolicy()
-    test.testUniformPolicy()
     test.testUpwardishPolicy()
     test.testSmartPolicy()
+    test.testUniformPolicy()
     

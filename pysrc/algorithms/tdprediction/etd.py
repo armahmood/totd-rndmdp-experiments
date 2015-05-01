@@ -21,7 +21,8 @@ class ETD(TDPrediction):
     self.alpha  = config['alpha']
     
   def initepisode(self):
-    self.z = np.zeros(self.nf)
+    self.z      = np.zeros(self.nf)
+    self.F      = 0.0
     
   def step(self, params):
     phi =params['phi']; R     =params['R']; phinext =params['phinext']

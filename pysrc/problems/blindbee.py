@@ -8,36 +8,13 @@ import numpy as np
 import pylab as pl
 import copy
 
-class BlindBee(object):
-  '''
-  A blind bee wander in a gridworld, only knows whether a trap is there
-  and whether it is in the trap, indicated by four features. One of them 
-  is never activated. Another four features indicate in which quadrant
-  the bee is in. The question is how much upward displacement before
-  the bee is in the trap.
-  '''
-
-  def __init__(self, params):
-    self.rdrun      = np.random.RandomState(params['runseed'])
-    params['rdrun'] = self.rdrun
-    self.state      = BlindBeeState(params)
-    if params['policy']=='uniform':
-      self.policy   = UniformPolicy(params)
-    elif params['policy']=='upward':
-      self.policy   = UpwardPolicy(params)
-    elif params['policy']=='upwardish':
-      self.policy   = UpwardishPolicy(params)
-    elif params['policy']=='smart':
-      self.policy   = SmartPolicy(params)
-
-  def initEpisode(self):
-    self.state.setInitPos()
-
-  def step(self):
-    curstate    = copy.copy(self.state)
-    a           = self.policy.getAction(self.state)
-    self.state.getNextState(a)
-    return {'a':a, 's':curstate, 'snext':self.state}
+'''
+A blind bee wander in a gridworld, only knows whether a trap is there
+and whether it is in the trap, indicated by four features. One of them 
+is never activated. Another four features indicate in which quadrant
+the bee is in. The question is how much upward displacement before
+the bee is in the trap.
+'''
     
 class BlindBeeState(object):
   def __init__(self, params):
@@ -46,33 +23,30 @@ class BlindBeeState(object):
     self.trapprob     = params['trapprob']
     self.trapduralim  = params['trapduralim'] 
     self.rdrun        = params['rdrun']
-    
-  def setInitPos(self):
-    self.row      = self.nrows-1
-    self.col      = self.rdrun.randint(0, self.ncols)
     self.traprow  = None
     self.trapdura = 0
     self.updisplacement  = 0
+    self.resetPos()
+    
+  def resetPos(self):
+    self.row      = self.nrows-1
+    self.col      = self.rdrun.randint(0, self.ncols)
   
   def inTrap(self):
     return self.row==self.traprow  
   
   def getNextState(self, a):
     self.updisplacement = 0.
-    if self.inTrap():
-      self.row     = self.nrows-1
-      self.col     = self.rdrun.randint(0, self.ncols)
-    else:
-      if a==BlindBeePolicy.LEFT and self.col>0:
-        self.col -= 1
-      elif a==BlindBeePolicy.RIGHT and self.col<self.ncols-1:
-        self.col += 1
-      elif a==BlindBeePolicy.UP and self.row>0:
-        self.row -= 1
-        self.updisplacement = 1.
-      elif a==BlindBeePolicy.DOWN and self.row<self.nrows-1:
-        self.row += 1
-        self.updisplacement = -1.
+    if a==BlindBeePolicy.LEFT and self.col>0:
+      self.col -= 1
+    elif a==BlindBeePolicy.RIGHT and self.col<self.ncols-1:
+      self.col += 1
+    elif a==BlindBeePolicy.UP and self.row>0:
+      self.row -= 1
+      self.updisplacement = 1.
+    elif a==BlindBeePolicy.DOWN and self.row<self.nrows-1:
+      self.row += 1
+      self.updisplacement = -1.
       
     if self.trapdura==self.trapduralim:
       self.trapdura = 0
@@ -84,7 +58,13 @@ class BlindBeeState(object):
         self.trapdura = 1
     else:
       self.trapdura += 1
+  
+  # To be called after getNextState()
+  def checkState(self):
 
+    if self.inTrap() or self.isTerminal(): 
+      self.resetPos()
+  
   def isTerminal(self):
     return self.row==0
   
@@ -118,9 +98,23 @@ class UpwardPolicy(BlindBeePolicy):
   
   def __init__(self, params):
     BlindBeePolicy.__init__(self, params)
+    
+  def getPolicy(self, state):
+    policy              = np.zeros(self.nas)
+    policy[self.UP]     = 1.
+    return policy 
+    
+class Upward2Policy(BlindBeePolicy):
   
-  def getAction(self, state):
-    return self.UP
+  def __init__(self, params):
+    BlindBeePolicy.__init__(self, params)
+    
+  def getPolicy(self, state):
+    policy              = np.zeros(self.nas)
+    policy[self.UP]     = 0.9
+    policy[self.LEFT]   = policy[self.RIGHT]\
+     =policy[self.DOWN]=(1-policy[self.UP])/3.
+    return policy
   
 class UpwardishPolicy(BlindBeePolicy):
   
@@ -148,13 +142,46 @@ class SmartPolicy(BlindBeePolicy):
       policy[self.LEFT]=policy[self.RIGHT]=0.5
 
     return policy 
+
+class Smart2Policy(BlindBeePolicy):
+  
+  def __init__(self, params):
+    BlindBeePolicy.__init__(self, params)
+
+  def getPolicy(self, state):
+    policy = np.zeros(self.nas)
+    if state.traprow==None:
+      policy[self.UP]     = 0.9
+      policy[self.LEFT]   = policy[self.RIGHT]\
+       =policy[self.DOWN]=(1-policy[self.UP])/3.
+    else:
+      policy[self.LEFT]=policy[self.RIGHT]=0.5
+
+    return policy 
+
+class Smart3Policy(BlindBeePolicy):
+  
+  def __init__(self, params):
+    BlindBeePolicy.__init__(self, params)
+
+  def getPolicy(self, state):
+    policy = np.zeros(self.nas)
+    if state.traprow==None:
+      policy[self.UP]     = 0.9
+      policy[self.LEFT]   = policy[self.RIGHT]\
+       =policy[self.DOWN]=(1-policy[self.UP])/3.
+    else:
+      policy[self.UP]=policy[self.DOWN]=0.1
+      policy[self.LEFT]=policy[self.RIGHT]=0.4
+
+    return policy 
   
 class Phi1(object):  
 
   def __init__(self):
     self.nf     = 4
   
-  def getPhi1(self, state):
+  def getPhi(self, state):
     phi     = np.zeros(self.nf)
     if state.traprow==None and not state.inTrap():
       phi[0]  = 1.
@@ -167,8 +194,35 @@ class Phi1(object):
     
     return phi
  
+class Phi2(object):  
+
+  def __init__(self, nrows):
+    self.nf     = nrows
   
+  def getPhi(self, state):
+    phi             = np.zeros(self.nf)
+    phi[state.row]  = 1.
+    
+    return phi
   
+class Phi3(object):  
+
+  def __init__(self):
+    self.nf     = 1
+  
+  def getPhi(self, state):
+    return np.ones(self.nf)
+  
+class Phi4(object):  
+
+  def __init__(self):
+    self.nf     = 2
+  
+  def getPhi(self, state):
+    phi     = np.zeros(self.nf)
+    phi[0]  = 1.
+    phi[1]  = 0 if state.traprow==None else 1
+    return phi
       
     
     
