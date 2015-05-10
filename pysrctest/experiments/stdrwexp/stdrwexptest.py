@@ -14,6 +14,7 @@ class Test(unittest.TestCase):
   def testStdRandomWalkExp(self):
     dirpath  = "./pysrctest/experiments/stdrwexp/"
     dirpath = "" if not os.path.isdir(dirpath) else dirpath
+    print os.getcwd()
     sys.argv = ["", "1", "StdRWSparseReward", dirpath]
     stdrwexp.main()
     sys.argv = ["", "1", "StdRWFreqReward", dirpath]

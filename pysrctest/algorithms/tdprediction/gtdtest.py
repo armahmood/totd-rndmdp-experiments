@@ -10,8 +10,6 @@ from pysrc.problems.stdrwfreqreward import StdRWFreqReward
 from pysrc.algorithms.tdprediction.gtd import GTD
 import pysrc.experiments.stdrwexp as stdrwexp
 from pysrc.problems.stdrw import PerformanceMeasure
-from pysrc.problems import mdp
-from pysrc.problems.simpletwostate import SimpleTwoState
 
 class Test(unittest.TestCase):
 
@@ -87,44 +85,6 @@ class Test(unittest.TestCase):
     print alg.th
     assert (abs(perf.thstarMSE.T[0] - alg.th) < 0.05).all()
 
-  def testGtdOnSimpleTwoStateFuncApprox(self):
-    config = \
-    {
-      'nf'        : 1,
-      'ftype'     : None,
-      'Rstd'      : 0.0,
-      'initsdist' : 'steadystate',
-      'Gamma'     : 0.9*np.eye(2),
-      'mdpseed'   : 1000,
-      'lambda'    : 0.,
-      'alpha'     : 0.0005,
-      'beta'      : 0.0
-    }
-    T         = 100000
-    prob      = SimpleTwoState(config)
-    prob.Phi  = np.array([[1], [1]])
-    alg       = GTD(config)
-    ''' Test fixed points '''
-    
-    # off-policy fixed point
-    thstar3 = mdp.getFixedPoint(prob.Psst, prob.exprt,\
-                      prob.Phi, prob.dsb,\
-                      prob.Gamma, config['lambda'])
-    print(thstar3)
-    
-    runseed = 0
-    prob.initTrajectory(runseed)
-    for t in range(T):
-      probstep  = prob.step()
-      s                 = probstep['s']
-      a                 = probstep['act']
-      probstep['l']     = config['lambda']
-      probstep['lnext'] = config['lambda']
-      probstep['rho']   = prob.getRho(s,a)
-      alg.step(probstep)
-    print(alg.th)
-    assert((abs(thstar3-alg.th)<0.06).all())
- 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
