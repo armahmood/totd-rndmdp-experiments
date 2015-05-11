@@ -12,7 +12,7 @@ from pysrc.problems import mdp
 class RandomMDP(mdp.MDP):
   '''
   It creates a randomly generated MDP object.
-  Its description is close to that of garnet problems.
+  Its description is close to that of garnet problems (Bhatnagar et al. 2009).
   '''
 
   def __init__(self, params):
