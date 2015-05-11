@@ -17,7 +17,7 @@ class Test(unittest.TestCase):
   def testwislstdonsparserewardtabular(self):
     ns = 7
     config = {
-              'neps'      : 3000,
+              'neps'      : 200,
               'ftype'     : 'tabular',
               'ns'        : ns,
               'inits'     : (ns-1)/2,
@@ -40,7 +40,7 @@ class Test(unittest.TestCase):
   def testwislstdonsparserewardbinary(self):
     ns = 7
     config = {
-              'neps'      : 2000,
+              'neps'      : 200,
               'ftype'     : 'binary',
               'ns'        : ns,
               'inits'     : (ns-1)/2,
@@ -63,7 +63,7 @@ class Test(unittest.TestCase):
   def testwislstdonfreqrewardtabular(self):
     ns = 7
     config = {
-              'neps'      : 2000,
+              'neps'      : 200,
               'ftype'     : 'tabular',
               'ns'        : ns,
               'inits'     : (ns-1)/2,

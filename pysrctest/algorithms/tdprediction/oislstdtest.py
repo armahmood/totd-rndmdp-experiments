@@ -17,7 +17,7 @@ class Test(unittest.TestCase):
   def testoffpolicylstdonsparserewardtabular(self):
     ns = 7
     config = {
-              'neps'      : 3000,
+              'neps'      : 500,
               'ftype'     : 'tabular',
               'ns'        : ns,
               'inits'     : (ns-1)/2,
@@ -26,8 +26,8 @@ class Test(unittest.TestCase):
               'runseed'   : 1,
               'nf'        : ns-2,
               'gamma'     : 0.9,
-              'lambda'    : 0.5,
-              'inita'     : 0.01,
+              'lambda'    : 0.3,
+              'inita'     : 0.1,
               }
     alg         = OISLSTD(config)
     rwprob      = StdRWSparseReward(config)
@@ -35,12 +35,12 @@ class Test(unittest.TestCase):
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
     print perf.thstarMSE.T[0]
     print alg.th
-    assert (abs(perf.thstarMSE.T[0] - alg.th) < 0.01).all()
+    assert (abs(perf.thstarMSE.T[0] - alg.th) < 0.05).all()
 
   def testoffpolicylstdonsparserewardbinary(self):
     ns = 7
     config = {
-              'neps'      : 2000,
+              'neps'      : 500,
               'ftype'     : 'binary',
               'ns'        : ns,
               'inits'     : (ns-1)/2,
@@ -63,7 +63,7 @@ class Test(unittest.TestCase):
   def testoffpolicylstdonfreqrewardtabular(self):
     ns = 7
     config = {
-              'neps'      : 2000,
+              'neps'      : 500,
               'ftype'     : 'tabular',
               'ns'        : ns,
               'inits'     : (ns-1)/2,
@@ -72,8 +72,8 @@ class Test(unittest.TestCase):
               'runseed'   : 1,
               'nf'        : ns-2,
               'gamma'     : 0.9,
-              'lambda'    : 0.5,
-              'inita'     : 0.1,              
+              'lambda'    : 0.1,
+              'inita'     : 1,              
               }
     alg         = OISLSTD(config)
     rwprob      = StdRWFreqReward(config)
@@ -81,7 +81,7 @@ class Test(unittest.TestCase):
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
     print perf.thstarMSE.T[0]
     print alg.th
-    assert (abs(perf.thstarMSE.T[0] - alg.th) < 0.05).all()
+    assert (abs(perf.thstarMSE.T[0] - alg.th) < 0.1).all()
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

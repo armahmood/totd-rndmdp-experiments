@@ -18,7 +18,7 @@ class Test(unittest.TestCase):
   def testgtdonsparserewardtabular(self):
     ns = 13
     config = {
-              'neps'      : 3000,
+              'neps'      : 200,
               'ftype'     : 'tabular',
               'ns'        : ns,
               'inits'     : (ns-1)/2,
@@ -28,7 +28,7 @@ class Test(unittest.TestCase):
               'nf'        : ns-2,
               'gamma'     : 0.9,
               'lambda'    : 0.5,
-              'alpha'     : 0.005,
+              'alpha'     : 0.02,
               'beta'      : 0.0
               }
     alg         = GTD(config)
@@ -37,12 +37,12 @@ class Test(unittest.TestCase):
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
     print perf.thstarMSE.T[0]
     print alg.th
-    assert (abs(perf.thstarMSE.T[0] - alg.th) < 0.01).all()
+    assert (abs(perf.thstarMSE.T[0] - alg.th) < 0.05).all()
 
   def testgtdonsparserewardbinary(self):
     ns = 13
     config = {
-              'neps'      : 2000,
+              'neps'      : 200,
               'ftype'     : 'binary',
               'ns'        : ns,
               'inits'     : (ns-1)/2,
@@ -52,7 +52,7 @@ class Test(unittest.TestCase):
               'nf'        : int(np.ceil(np.log(ns-1)/np.log(2))),
               'gamma'     : 0.9,
               'lambda'    : 0.5,
-              'alpha'     : 0.0005,
+              'alpha'     : 0.005,
               'beta'      : 0.0
               }
     alg         = GTD(config)
@@ -61,7 +61,7 @@ class Test(unittest.TestCase):
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
     print perf.thstarMSPBE.T[0]
     print alg.th
-    assert (abs(perf.thstarMSPBE.T[0] - alg.th) < 0.02).all()
+    assert (abs(perf.thstarMSPBE.T[0] - alg.th) < 0.05).all()
 
   def testgtdonfreqrewardtabular(self):
     ns = 7
@@ -97,10 +97,10 @@ class Test(unittest.TestCase):
       'Gamma'     : 0.9*np.eye(2),
       'mdpseed'   : 1000,
       'lambda'    : 0.,
-      'alpha'     : 0.0005,
+      'alpha'     : 0.005,
       'beta'      : 0.0
     }
-    T         = 100000
+    T         = 10000
     prob      = SimpleTwoState(config)
     prob.Phi  = np.array([[1], [1]])
     alg       = GTD(config)

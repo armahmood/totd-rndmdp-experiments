@@ -64,7 +64,7 @@ class Test(unittest.TestCase):
   def testOISonsparsereward(self):
     ns = 7
     config = {
-              'neps'      : 3000,
+              'neps'      : 1000,
               'ftype'     : 'tabular',
               'ns'        : ns,
               'inits'     : (ns-1)/2,
@@ -81,12 +81,12 @@ class Test(unittest.TestCase):
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
     print perf.thstarMSE.T[0]
     print alg.V
-    assert (abs(perf.thstarMSE.T[0] - alg.V) < 0.05).all()
+    assert (abs(perf.thstarMSE.T[0] - alg.V) < 0.15).all()
 
   def testOISonfreqreward(self):
     ns = 7
     config = {
-              'neps'      : 4000,
+              'neps'      : 2000,
               'ftype'     : 'tabular',
               'ns'        : ns,
               'inits'     : (ns-1)/2,
@@ -103,7 +103,7 @@ class Test(unittest.TestCase):
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
     print perf.thstarMSE.T[0]
     print alg.V
-    assert (abs(perf.thstarMSE.T[0] - alg.V) < 0.05).all()
+    assert (abs(perf.thstarMSE.T[0] - alg.V) < 0.15).all()
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testOIS']
