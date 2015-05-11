@@ -11,7 +11,7 @@ by Mahmood, van Hasselt & Sutton (2014)
 import numpy as np
 import pylab as pl
 from pysrc.algorithms.tdprediction.tdprediction import TDPrediction
-
+ 
 class WISLSTD(TDPrediction):
   
   def __init__(self, config):

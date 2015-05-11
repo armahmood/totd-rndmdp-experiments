@@ -15,9 +15,9 @@ import argparse
 from pysrc.problems.stdrw import PerformanceMeasure
 from pysrc.problems.stdrwsparsereward import StdRWSparseReward
 from pysrc.problems.stdrwfreqreward import StdRWFreqReward
-from pysrc.algorithms.tdprediction import oislstd
-from pysrc.algorithms.tdprediction import wislstd
-from pysrc.algorithms.tdprediction import gtd
+from pysrc.algorithms.tdprediction.offpolicy import oislstd
+from pysrc.algorithms.tdprediction.offpolicy import wislstd
+from pysrc.algorithms.tdprediction.offpolicy import gtd
 import cPickle as pickle
 
 def runoneconfig(config, prob, alg, perf):

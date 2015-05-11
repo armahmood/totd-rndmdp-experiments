@@ -3,14 +3,14 @@ Created on Jun 2, 2014
 
 @author: A. Rupam Mahmood
 
-Implementation of TD(lambda)
+Implementation of OTD(lambda)
 
 '''
 
 import numpy as np
 from pysrc.algorithms.tdprediction.tdprediction import TDPrediction
 
-class TD(TDPrediction):
+class OTD(TDPrediction):
   
   def __init__(self, config):
     

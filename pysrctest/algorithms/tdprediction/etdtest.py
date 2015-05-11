@@ -8,7 +8,7 @@ import numpy as np
 import pylab as pl
 from pysrc.problems.stdrwsparsereward import StdRWSparseReward
 from pysrc.problems.stdrwfreqreward import StdRWFreqReward
-from pysrc.algorithms.tdprediction.etd import ETD
+from pysrc.algorithms.tdprediction.offpolicy.etd import ETD
 import pysrc.experiments.stdrwexp as stdrwexp
 from pysrc.problems.stdrw import PerformanceMeasure
 from pysrc.problems import mdp

@@ -7,7 +7,7 @@ import unittest
 import numpy as np
 from pysrc.problems.stdrwsparsereward import StdRWSparseReward
 from pysrc.problems.stdrwfreqreward import StdRWFreqReward
-from pysrc.algorithms.tdprediction.gtd import GTD
+from pysrc.algorithms.tdprediction.offpolicy.gtd import GTD
 import pysrc.experiments.stdrwexp as stdrwexp
 from pysrc.problems.stdrw import PerformanceMeasure
 from pysrc.problems import mdp

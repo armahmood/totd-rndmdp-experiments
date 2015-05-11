@@ -8,7 +8,7 @@ import unittest
 import numpy as np
 from pysrc.problems.stdrwsparsereward import StdRWSparseReward
 from pysrc.problems.stdrwfreqreward import StdRWFreqReward
-from pysrc.algorithms.tdprediction.wislstd import WISLSTD
+from pysrc.algorithms.tdprediction.offpolicy.wislstd import WISLSTD
 import pysrc.experiments.stdrwexp as stdrwexp
 from pysrc.problems.stdrw import PerformanceMeasure
 

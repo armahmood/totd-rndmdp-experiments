@@ -10,7 +10,7 @@ by Yu, (2010, Yu & Bertsekas 2009)
 
 import numpy as np
 import pylab as pl
-from pysrc.algorithms.tdprediction.tdprediction import TDPrediction
+from pysrc.algorithms.tdprediction.tdprediction import TDPrediction 
 
 class OISLSTD(TDPrediction):
   
