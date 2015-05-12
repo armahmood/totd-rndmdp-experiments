@@ -241,11 +241,11 @@ class PerformanceMeasure(object):
                                      params['pright'])
     self.Pm             = prob.getP(params['ns'], self.mpol, self.Psa)
     self.Dm             = prob.getD(params['ns'], self.Pm, self.initstateprob)
-    self.mse            = np.zeros(params['neps'])
+    self.MSPVE            = np.zeros(params['neps'])
 
   def calcMse(self, alg, ep):
     msediff         = np.dot(self.Phi, alg.estimate()) - self.VTrueProj
-    self.mse[ep]    = np.dot( np.dot(msediff, self.Dm), msediff)
+    self.MSPVE[ep]    = np.dot( np.dot(msediff, self.Dm), msediff)
     
   
   

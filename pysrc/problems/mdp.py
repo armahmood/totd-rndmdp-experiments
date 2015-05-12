@@ -22,7 +22,10 @@ class MDP(object):
     self.ns         = params['ns']
     self.na         = params['na']
     self.ftype      = params['ftype'] # feature type
-    self.nf         = params['nf']
+    if self.ftype=='tabular':   self.nf = self.ns  
+    elif self.ftype=='binary':  self.nf = int(np.ceil(np.log(self.ns+1)/np.log(2)))
+    else: self.nf = params['nf']
+
     self.Rstd       = params['Rstd'] # std dev. for generating random rewards
     self.initsdist  = params['initsdist'] # initial state distribution
     self.Gamma      = params['Gamma'] # diagonal matrix of state-dependent gammas
@@ -32,10 +35,16 @@ class MDP(object):
     self.Pssa       = self.getPssa()
     self.Rssa       = self.getRssa()
     self.bpol       = self.getBPolicy()
-    self.tpol       = self.getTPolicy()
-    
     (self.Pssb, self.exprb) = getPolInducedModel(self.Pssa, self.Rssa, self.bpol)
-    (self.Psst, self.exprt) = getPolInducedModel(self.Pssa, self.Rssa, self.tpol)
+    if 'offpolicy' in params and params['offpolicy']==True:
+      self.offpolicy  = True
+      self.tpol       = self.getTPolicy()
+      (self.Psst, self.exprt) = getPolInducedModel(self.Pssa, self.Rssa, self.tpol)
+    else:
+      self.offpolicy  = False
+      self.tpol       = self.bpol
+      (self.Psst, self.exprt) = (self.Pssb, self.exprb)
+    
     self.Phi                = getPhi(self.ftype, self.ns, self.nf, rndobj=self.rdmdp)
     self.dsb                = steadystateprob(self.Pssb)
     if self.initsdist=='steadystate': self.initsdist = self.dsb
@@ -54,12 +63,15 @@ class MDP(object):
 
   def initTrajectory(self, runseed):
     self.rdrun    = np.random.RandomState(runseed)
-    self.s        = sampleFrom(self.initsdist, self.rdrun)
+    if self.initsdist=='statezero':
+      self.s  = 0
+    else:
+      self.s  = sampleFrom(self.initsdist, self.rdrun)
 
   def step(self):
     a = 0 if self.na==1 else getAction(self.bpol, self.s, self.rdrun)
     snext   = getNextState(self.Pssa, self.s, a, self.rdrun)
-    noise   = self.rdrun.normal(0, self.Rstd) if self.Rstd>0 else 0.
+    noise   = self.rdmdp.normal(0, self.Rstd) if self.Rstd>0 else 0.
     R       = getReward(self.Rssa, self.s, snext, a) + noise
     phi     = self.Phi[self.s]
     phinext = self.Phi[snext]
@@ -204,5 +216,30 @@ def getPhiIndices(Phi):
     PhiIndices[s] = mpl.mlab.find(Phi[s]!=0)
   return PhiIndices
   
+class PerformanceMeasure(object):
+  '''
+  This class takes the responsibility of measuring performance of an estimate.
+  Only for on-policy case at this point.
+  '''
+  
+  def __init__(self, params, prob):
+    self.T            = params['T'] # number of total steps
+    self.N            = params['N'] # number of data points to store
+    self.Phi          = prob.Phi
+    self.thstar       = getFixedPoint(prob.Pssb, prob.exprb, prob.Phi, prob.dsb, prob.Gamma, 1.)
+    self.VTrueProj    = np.dot(prob.Phi, self.thstar)
+    self.D            = np.diag(prob.dsb)
+    self.normFactor   = np.dot(self.VTrueProj, np.dot(self.D, self.VTrueProj))
+    self.MSPVE          = np.zeros(self.N)
+    
+  def calcMSPVE(self, alg, t): # t is the number of the current step
+    index               = t*self.N/self.T 
+    msediff             = np.dot(self.Phi, alg.estimate()) - self.VTrueProj
+    self.MSPVE[index]  += np.dot( np.dot(msediff, self.D), msediff)
+    if np.mod(t+1, self.T/self.N)==0:
+      self.MSPVE[index]  /= self.T/self.N
+  
+  def getNormMSPVE(self):
+    return self.MSPVE/self.normFactor
   
   

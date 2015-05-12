@@ -66,7 +66,7 @@ def main():
     alg            = algs[algname](config)
     config['runseed'] = args.run
     runoneconfig(config, rwprob, alg, perf)
-    config['mse']     = perf.mse
+    config['MSPVE']     = perf.MSPVE
     pickle.dump(config, f, -1)
 
 if __name__ == '__main__':

@@ -21,6 +21,7 @@ class Test(unittest.TestCase):
       'initsdist' : 'steadystate',
       'Gamma'     : 0.9*np.eye(2),
       'mdpseed'   : 1000,
+      'offpolicy' : True
     }
     prob    = SimpleTwoState(config)
     
@@ -55,6 +56,7 @@ class Test(unittest.TestCase):
       'initsdist' : 'steadystate',
       'Gamma'     : 0.9*np.eye(2),
       'mdpseed'   : 1000,
+      'offpolicy' : True
     }
     prob    = SimpleTwoState(config)
     prob.Phi = np.array([[1], [1]])

@@ -22,6 +22,8 @@ class RandomMDP(mdp.MDP):
     mdp.MDP.__init__(self, params)
     
   def getPssa(self):
+    Pssa = np.reshape(self.rdmdp.uniform(0, 1, self.ns*self.ns*self.na) + 10**-10 , \
+                                (self.ns, self.ns, self.na))
     Pssa = np.zeros((self.ns, self.ns, self.na))
     for a in range(self.na):
       for s in range(self.ns):
