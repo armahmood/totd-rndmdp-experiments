@@ -6,6 +6,7 @@ Created on May 12, 2015
 
 import os
 import sys
+sys.path.insert(0, os.getcwd())
 import numpy as np
 import matplotlib.pyplot as ppl
 from pysrc.plot import plotdataprocess 

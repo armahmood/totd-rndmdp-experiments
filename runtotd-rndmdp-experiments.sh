@@ -12,7 +12,7 @@ then
 	echo Choose argument 1 from the following list: $problist
 	echo Choose argument 2 from the following list: $featurelist
 	echo Choose argument 3 from the following list: $algorithmlist
-exit 0
+	echo Experiment runs aborted
 else
 	echo Running $1 random mdp experiment with $2 features using $3 algorithm
 	for runseed in {1..10}
@@ -20,3 +20,5 @@ else
 		python pysrc/experiments/rndmdpexp.py 1000 $2 $runseed results/totd-rndmdp-experiments/$1/$3/ &
 	done
 fi
+echo Invoking matplotlib plot for the experiment ... 
+python ./pysrc/plot/plotrndmdpexp.py
