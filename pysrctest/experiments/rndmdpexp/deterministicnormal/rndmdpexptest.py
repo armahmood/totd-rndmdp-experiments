@@ -20,7 +20,7 @@ class Test(unittest.TestCase):
     groundtruth1 = pickle.load(open(dirpath+"exp1_TOTD__mdpseed_1000_runseed_1_conf_config_normal_large_det.dat_alphaindex_0_lmbdaindex_1", "rb"))
     print data1
     print groundtruth1
-    assert(abs(groundtruth1['TOTDMSPVE']-data1['NMSPVE'])<10**-10)
+    assert(abs(groundtruth1['TOTDMSPVE']-data1['error'])<10**-10)
 
 if __name__ == "__main__":
   #import sys;sys.argv = ['', 'Test.testStdRandomWalkExp']

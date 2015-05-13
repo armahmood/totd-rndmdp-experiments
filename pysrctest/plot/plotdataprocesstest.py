@@ -19,7 +19,7 @@ class Test(unittest.TestCase):
     created output files.
     '''
     data = [
-               {'mse'   : mse[alpha==alphas,beta==betas,lmbda==lmbdas]+run,
+               {'error'   : mse[alpha==alphas,beta==betas,lmbda==lmbdas]+run,
                 'alpha' : alpha,
                 'beta'   : beta,
                 'lmbda'  : lmbda,
@@ -73,7 +73,7 @@ class Test(unittest.TestCase):
           tableavgstd[i,4] = np.std(temp)/np.sqrt(2*nruns)
           i += 1
     return {'alphas':alphas, 'betas':betas, 
-            'lmbdas':lmbdas, 'mse':mse, 
+            'lmbdas':lmbdas, 'error':mse, 
             'runs':runs, 'table':table, 
             'tableavgstd':tableavgstd}
 
@@ -125,7 +125,7 @@ class Test(unittest.TestCase):
   def testcreatetable(self):
     rets      = self.tableexample1()
     alphas=rets['alphas']; betas=rets['betas'];lmbdas=rets['lmbdas']
-    mse=rets['mse']; runs=rets['runs']; table=rets['table']
+    mse=rets['error']; runs=rets['runs']; table=rets['table']
     data      = self.createdummydata(alphas,betas,lmbdas,mse,runs)
     params    = np.array(['alpha', 'beta', 'lmbda'])
     table2    = plotutil.createtable(data, params, 2)
@@ -134,7 +134,7 @@ class Test(unittest.TestCase):
   def testcreatetableavg(self):
     rets      = self.tableexample1()
     alphas=rets['alphas']; betas=rets['betas'];lmbdas=rets['lmbdas']
-    mse=rets['mse']; runs=rets['runs']; tableavgstd=rets['tableavgstd']
+    mse=rets['error']; runs=rets['runs']; tableavgstd=rets['tableavgstd']
     params        = np.array(['alpha', 'beta', 'lmbda'])
     data          = self.createdummydata(alphas,betas,lmbdas,mse,runs)
     table         = plotutil.createtable(data, params, 2)
@@ -144,7 +144,7 @@ class Test(unittest.TestCase):
   def testperformancevsparams(self):
     rets      = self.tableexample1()
     alphas=rets['alphas']; betas=rets['betas'];lmbdas=rets['lmbdas']
-    mse=rets['mse']; runs=rets['runs']; tableavgstd=rets['tableavgstd']
+    mse=rets['error']; runs=rets['runs']; tableavgstd=rets['tableavgstd']
     data          = self.createdummydata(alphas,betas,lmbdas,mse,runs)
     params        = np.array(['alpha', 'beta', 'lmbda'])
     table         = plotutil.createtable(data, params, 2)

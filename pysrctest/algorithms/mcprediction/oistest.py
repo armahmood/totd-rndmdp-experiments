@@ -64,7 +64,7 @@ class Test(unittest.TestCase):
   def testOISonsparsereward(self):
     ns = 7
     config = {
-              'neps'      : 1000,
+              'N'      : 1000,
               'ftype'     : 'tabular',
               'ns'        : ns,
               'inits'     : (ns-1)/2,
@@ -86,7 +86,7 @@ class Test(unittest.TestCase):
   def testOISonfreqreward(self):
     ns = 7
     config = {
-              'neps'      : 2000,
+              'N'      : 2000,
               'ftype'     : 'tabular',
               'ns'        : ns,
               'inits'     : (ns-1)/2,

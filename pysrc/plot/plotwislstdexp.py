@@ -4,24 +4,32 @@ Created on Apr 8, 2015
 @author: A. Rupam Mahmood
 '''
 
+import os
 import sys
 from pysrc.plot import plotdataprocess
 import matplotlib.pyplot as ppl
 import pickle
 
 def main():
-  path      = "../../results/wislstdexperiments/oislstd/run_" 
-  sys.argv  = ["", "10", path, \
+  path = "./results/wislstdexperiments/oislstd/"
+  if not os.path.exists(path):
+    path = "../."+path
+  pathfileprefix      = path+"run_"
+  sys.argv  = ["", "10", pathfileprefix, \
               "2", "inita", "lambda", \
               "1", "lambda"]
   plotdataprocess.main()
-  oisdata   = pickle.load(file(path+"perfvslambda.plot"))
-  path      = "../../results/wislstdexperiments/wislstd/run_" 
-  sys.argv  = ["", "10", path, \
+  oisdata   = pickle.load(file(pathfileprefix+"perfvslambda.plot"))
+
+  path = "./results/wislstdexperiments/wislstd/"
+  if not os.path.exists(path):
+    path = "../."+path
+  pathfileprefix      = path+"run_"
+  sys.argv  = ["", "10", pathfileprefix, \
               "2", "inita", "lambda", \
               "1", "lambda"]
   plotdataprocess.main()
-  wisdata   = pickle.load(file(path+"perfvslambda.plot"))
+  wisdata   = pickle.load(file(pathfileprefix+"perfvslambda.plot"))
   
   ppl.errorbar(oisdata[:,0], oisdata[:,1], oisdata[:,2], label="OIS")
   ppl.errorbar(wisdata[:,0], wisdata[:,1], wisdata[:,2], label="WIS")

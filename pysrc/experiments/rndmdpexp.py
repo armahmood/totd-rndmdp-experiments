@@ -65,7 +65,7 @@ def main():
     alg                   = algs[algname](config)
     config['runseed']     = args.runseed
     runoneconfig(config, prob, alg, perf)
-    config['NMSPVE']      = perf.getNormMSPVE()
+    config['error']      = perf.getNormMSPVE()
     pickle.dump(config, f, -1)
 
 if __name__ == '__main__':

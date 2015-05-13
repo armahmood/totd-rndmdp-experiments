@@ -18,7 +18,7 @@ class Test(unittest.TestCase):
   def testtdronsparserewardtabular(self):
     ns = 13
     config = {
-              'neps'      : 200,
+              'N'      : 200,
               'ftype'     : 'tabular',
               'ns'        : ns,
               'inits'     : (ns-1)/2,
@@ -42,7 +42,7 @@ class Test(unittest.TestCase):
   def testtdronsparserewardbinary(self):
     ns = 13
     config = {
-              'neps'      : 200,
+              'N'      : 200,
               'ftype'     : 'binary',
               'ns'        : ns,
               'inits'     : (ns-1)/2,
@@ -66,7 +66,7 @@ class Test(unittest.TestCase):
   def testtdronfreqrewardtabular(self):
     ns = 5
     config = {
-              'neps'      : 200,
+              'N'      : 200,
               'ftype'     : 'tabular',
               'ns'        : ns,
               'inits'     : (ns-1)/2,

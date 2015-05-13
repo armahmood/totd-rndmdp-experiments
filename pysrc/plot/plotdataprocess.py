@@ -19,10 +19,10 @@ import sys
 import argparse
 
 
-def loaddata(nruns, pathfilename):
+def loaddata(nruns, pathfileprefix):
   data = []
   for run in range(1, nruns + 1):
-    filepathname = pathfilename + str(run) + ".dat"
+    filepathname = pathfileprefix + str(run) + ".dat"
     f = open(filepathname, 'rb')
     try:
       while True:
@@ -40,7 +40,7 @@ def createtable(data, params, neps):
   for i in range(len(data)):
     for j in range(nparams):
       table[i,j]    = data[i][params[j]]
-    table[i,nparams:]   = data[i]['mse']
+    table[i,nparams:]   = data[i]['error'] # error, maybe in squared form 
   return table
 
 def createtableavg(table, nruns, neps):
@@ -102,20 +102,20 @@ def main():
 
   if len(sys.argv)>1:
     nruns  = int(sys.argv[1])
-    pathfilename   = sys.argv[2]
+    pathfileprefix   = sys.argv[2]
     nparams = int(sys.argv[3])
     params = np.array([ sys.argv[4+i] for i in range(nparams) ])
     nparamssub = int(sys.argv[4+nparams]) 
     paramssub = np.array( [ sys.argv[4+nparams+1+i] for i in range(nparamssub) ] )
-  data        = loaddata(nruns, pathfilename)
-  neps        = data[0]['neps']
+  data        = loaddata(nruns, pathfileprefix)
+  neps        = data[0]['N'] # number of data points
   table       = createtable(data, params, neps)
   tableavgstd = createtableavg(table, nruns, neps)
   
   perftable = performancevsparams(tableavgstd, params, paramssub)
   
   print perftable    
-  fsname    = pathfilename+'perfvs'
+  fsname    = pathfileprefix+'perfvs'
   for i in range(len(paramssub)): fsname += paramssub[i]
   fsname    += ".plot"
   fs           = open(fsname, "wb")

@@ -64,7 +64,7 @@ class Test(unittest.TestCase):
   def testPRISonsparsereward(self):
     ns = 7
     config = {
-              'neps'      : 900,
+              'N'      : 900,
               'ftype'     : 'tabular',
               'ns'        : ns,
               'inits'     : (ns-1)/2,
@@ -86,7 +86,7 @@ class Test(unittest.TestCase):
   def testPRISonfreqreward(self):
     ns = 7
     config = {
-              'neps'      : 500,
+              'N'      : 500,
               'ftype'     : 'tabular',
               'ns'        : ns,
               'inits'     : (ns-1)/2,

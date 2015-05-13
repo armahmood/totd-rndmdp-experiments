@@ -20,7 +20,7 @@ class Test(unittest.TestCase):
     groundtruth = pickle.load(open(dirpath+"exp1_TD__mdpseed_1000_runseed_1_conf_config_tabular.dat_alphaindex_0_lmbdaindex_0", "rb"))
     print data
     print groundtruth
-    assert(abs(groundtruth['TDMSPVE']-data['NMSPVE'])<10**-10)
+    assert(abs(groundtruth['TDMSPVE']-data['error'])<10**-10)
 
     sys.argv  = ["", "1000", "tabular", "2", dirpath]
     rndmdpexp.main()
@@ -28,7 +28,7 @@ class Test(unittest.TestCase):
     groundtruth = pickle.load(open(dirpath+"exp1_TD__mdpseed_1000_runseed_2_conf_config_tabular.dat_alphaindex_0_lmbdaindex_0", "rb"))
     print data
     print groundtruth
-    assert(abs(groundtruth['TDMSPVE']-data['NMSPVE'])<10**-10)
+    assert(abs(groundtruth['TDMSPVE']-data['error'])<10**-10)
 
 if __name__ == "__main__":
   #import sys;sys.argv = ['', 'Test.testStdRandomWalkExp']

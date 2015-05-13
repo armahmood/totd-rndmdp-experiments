@@ -14,7 +14,7 @@ def main():
                    {
                    'algname'   : 'gtd',
                    'gamma'     : 1.0,
-                   'neps'      : 10,
+                   'N'      : 10,
                    'ftype'     : ftype,
                    'ns'        : ns,
                    'nf'        : nf,

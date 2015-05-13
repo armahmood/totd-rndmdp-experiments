@@ -22,7 +22,7 @@ import cPickle as pickle
 
 def runoneconfig(config, prob, alg, perf):
   prob.setrunseed(config['runseed'])
-  for ep in range(config['neps']):
+  for ep in range(config['N']):
     prob.initepisode()
     alg.initepisode()
     while not prob.isterminal():
@@ -66,7 +66,7 @@ def main():
     alg            = algs[algname](config)
     config['runseed'] = args.run
     runoneconfig(config, rwprob, alg, perf)
-    config['MSPVE']     = perf.MSPVE
+    config['error']     = perf.MSPVE
     pickle.dump(config, f, -1)
 
 if __name__ == '__main__':

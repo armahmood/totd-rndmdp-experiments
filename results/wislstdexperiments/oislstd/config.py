@@ -14,7 +14,7 @@ def main():
                    {
                    'algname'   : 'oislstd',
                    'gamma'     : 1.0,
-                   'neps'      : 100,
+                   'N'      : 100,
                    'ftype'     : ftype,
                    'ns'        : ns,
                    'nf'        : nf,
