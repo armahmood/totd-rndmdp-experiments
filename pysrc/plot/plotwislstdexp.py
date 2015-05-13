@@ -10,14 +10,14 @@ import matplotlib.pyplot as ppl
 import pickle
 
 def main():
-  path      = "../../results/wislstdexperiments/oislstd/" 
+  path      = "../../results/wislstdexperiments/oislstd/run_" 
   sys.argv  = ["", "10", path, \
               "2", "inita", "lambda", \
               "1", "lambda"]
   plotdataprocess.main()
   oisdata   = pickle.load(file(path+"perfvslambda.plot"))
-  path      = "../../results/wislstdexperiments/wislstd/" 
-  sys.argv  = ["", "10", "../../results/wislstdexperiments/wislstd/", \
+  path      = "../../results/wislstdexperiments/wislstd/run_" 
+  sys.argv  = ["", "10", path, \
               "2", "inita", "lambda", \
               "1", "lambda"]
   plotdataprocess.main()

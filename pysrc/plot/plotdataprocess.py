@@ -19,10 +19,10 @@ import sys
 import argparse
 
 
-def loaddata(nruns, path):
+def loaddata(nruns, pathfilename):
   data = []
   for run in range(1, nruns + 1):
-    filepathname = path + "run_" + str(run) + ".dat"
+    filepathname = pathfilename + str(run) + ".dat"
     f = open(filepathname, 'rb')
     try:
       while True:
@@ -102,12 +102,12 @@ def main():
 
   if len(sys.argv)>1:
     nruns  = int(sys.argv[1])
-    path   = sys.argv[2]
+    pathfilename   = sys.argv[2]
     nparams = int(sys.argv[3])
     params = np.array([ sys.argv[4+i] for i in range(nparams) ])
     nparamssub = int(sys.argv[4+nparams]) 
     paramssub = np.array( [ sys.argv[4+nparams+1+i] for i in range(nparamssub) ] )
-  data        = loaddata(nruns, path)
+  data        = loaddata(nruns, pathfilename)
   neps        = data[0]['neps']
   table       = createtable(data, params, neps)
   tableavgstd = createtableavg(table, nruns, neps)
@@ -115,7 +115,7 @@ def main():
   perftable = performancevsparams(tableavgstd, params, paramssub)
   
   print perftable    
-  fsname    = path+'perfvs'
+  fsname    = pathfilename+'perfvs'
   for i in range(len(paramssub)): fsname += paramssub[i]
   fsname    += ".plot"
   fs           = open(fsname, "wb")
