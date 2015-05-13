@@ -23,11 +23,14 @@ def plotperfvslmbda(pathfileprefix, label):
   ppl.errorbar(data[:,0], data[:,1], data[:,2], label=label)
 
 def main():
-  pathfileprefix      = "../../results/totd-rndmdp-experiments/small/td/mdpseed_1000_ftype_tabular_runseed_"
+  path                = "./results/totd-rndmdp-experiments/small/"
+  if not os.path.exists(path):
+    path = "../."+path
+  pathfileprefix      = path+"td/mdpseed_1000_ftype_tabular_runseed_"
   plotperfvslmbda(pathfileprefix, "TD")
-  pathfileprefix      = "../../results/totd-rndmdp-experiments/small/tdr/mdpseed_1000_ftype_tabular_runseed_"
+  pathfileprefix      = path+"tdr/mdpseed_1000_ftype_tabular_runseed_"
   plotperfvslmbda(pathfileprefix, "TDR")
-  pathfileprefix      = "../../results/totd-rndmdp-experiments/small/totd/mdpseed_1000_ftype_tabular_runseed_"
+  pathfileprefix      = path+"totd/mdpseed_1000_ftype_tabular_runseed_"
   plotperfvslmbda(pathfileprefix, "TOTD")
   ppl.legend()
 
