@@ -42,7 +42,7 @@ def main():
   filepathname  = args.path   +\
                   "mdpseed_"  + str(args.mdpseed)   + "_"\
                   "ftype_"    + str(args.ftype) + "_"\
-                  "runseed_"  + str(args.runseed)   + "_"\
+                  "runseed_"  + str(args.runseed)   +\
                   ".dat"
   f             = open(filepathname, 'wb')
   

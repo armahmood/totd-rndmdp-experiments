@@ -17,7 +17,7 @@ class Test(unittest.TestCase):
 
     sys.argv  = ["", "1000", "binary", "1", dirpath]
     rndmdpexp.main()
-    data        = pickle.load(open(dirpath+"mdpseed_1000_ftype_binary_runseed_1_.dat", "rb"))
+    data        = pickle.load(open(dirpath+"mdpseed_1000_ftype_binary_runseed_1.dat", "rb"))
     groundtruth = pickle.load(open(dirpath+"exp1_TDR__mdpseed_1000_runseed_1_conf_config_binary_large.dat_alphaindex_0_lmbdaindex_0", "rb"))
     print data
     print groundtruth

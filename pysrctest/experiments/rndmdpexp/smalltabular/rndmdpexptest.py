@@ -16,7 +16,7 @@ class Test(unittest.TestCase):
     dirpath   = "" if not os.path.isdir(dirpath) else dirpath
     sys.argv  = ["", "1000", "tabular", "1", dirpath]
     rndmdpexp.main()
-    data        = pickle.load(open(dirpath+"mdpseed_1000_ftype_tabular_runseed_1_.dat", "rb"))
+    data        = pickle.load(open(dirpath+"mdpseed_1000_ftype_tabular_runseed_1.dat", "rb"))
     groundtruth = pickle.load(open(dirpath+"exp1_TD__mdpseed_1000_runseed_1_conf_config_tabular.dat_alphaindex_0_lmbdaindex_0", "rb"))
     print data
     print groundtruth
@@ -24,7 +24,7 @@ class Test(unittest.TestCase):
 
     sys.argv  = ["", "1000", "tabular", "2", dirpath]
     rndmdpexp.main()
-    data        = pickle.load(open(dirpath+"mdpseed_1000_ftype_tabular_runseed_2_.dat", "rb"))
+    data        = pickle.load(open(dirpath+"mdpseed_1000_ftype_tabular_runseed_2.dat", "rb"))
     groundtruth = pickle.load(open(dirpath+"exp1_TD__mdpseed_1000_runseed_2_conf_config_tabular.dat_alphaindex_0_lmbdaindex_0", "rb"))
     print data
     print groundtruth
