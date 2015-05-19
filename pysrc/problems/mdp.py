@@ -86,6 +86,8 @@ class MDP(object):
   def getRho(self, s, a):
     return self.tpol[s,a]/self.bpol[s,a]
 
+  def isTerminal(self):
+    return self.Gamma[self.s, self.s] == 0.0
 
 ## general ergodic MDP, general gamma 
 ## Pssa is of s X s' X a form

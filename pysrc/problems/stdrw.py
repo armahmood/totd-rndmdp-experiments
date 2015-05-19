@@ -8,6 +8,7 @@ Created on Mar 25, 2015
 import numpy as np
 import pylab as pl
 import random
+from pysrc.problems.mdp import MDP
 
 class StdRandomWalk(object):
   '''
@@ -247,5 +248,34 @@ class PerformanceMeasure(object):
     msediff         = np.dot(self.Phi, alg.estimate()) - self.VTrueProj
     self.MSPVE[ep]    = np.dot( np.dot(msediff, self.Dm), msediff)
     
-  
+class StdRandomWalk2(MDP): # same problem implemented through MDP class
+  def __init__(self, params):
+    self.behavRight   = params['behavRight']
+    self.targtRight   = params['targtRight']
+    MDP.__init__(self,params)
+
+  def getPssa(self):
+    Pssa = np.zeros((self.ns, self.ns, 2));
+    Pssa[0,0,0] = Pssa[0,0,1] = Pssa[self.ns-1,self.ns-1,0] \
+      = Pssa[self.ns-1,self.ns-1,1] = 0.5
+    Pssa[tuple(range(1,self.ns)), tuple(range(0,self.ns-1)), 0] = 1
+    Pssa[tuple(range(0,self.ns-1)), tuple(range(1,self.ns)), 1] = 1
+    self._setTermToInitTrans(Pssa)
+    return Pssa
+
+  def _setTermToInitTrans(self, Pssa):
+    zeroGammas              = np.diag(self.Gamma)==0.0
+    Pssa[zeroGammas, :, :]   = np.reshape(np.repeat(self.initsdist, 2), (self.ns, 2))
+
+  def getBPolicy(self):
+    pol = np.zeros((self.ns,2))
+    pol[0:self.ns,0] = 1-self.behavRight
+    pol[0:self.ns,1] = self.behavRight
+    return pol
+    
+  def getTPolicy(self):
+    pol = np.zeros((self.ns,2))
+    pol[0:self.ns,0] = 1-self.targtRight
+    pol[0:self.ns,1] = self.targtRight
+    return pol
   
