@@ -27,8 +27,8 @@ def runoneconfig(config, prob, alg, perf):
     probstep          = prob.step()
     s                 = probstep['s']
     a                 = probstep['act']
-    probstep['l']     = config['lambda']
-    probstep['lnext'] = config['lambda']
+    probstep['l']     = config['lmbda']
+    probstep['lnext'] = config['lmbda']
     probstep['rho']   = prob.getRho(s,a)
     alg.step(probstep)
     if prob.isTerminal():  

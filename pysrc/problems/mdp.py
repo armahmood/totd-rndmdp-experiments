@@ -45,7 +45,7 @@ class MDP(object):
       self.tpol       = self.bpol
       (self.Psst, self.exprt) = (self.Pssb, self.exprb)
     
-    self.Phi                = getPhi(self.ftype, self.ns, self.nf, rndobj=self.rdmdp)
+    self.Phi                = self.getPhi(self.ftype, self.ns, self.nf, rndobj=self.rdmdp)
     self.dsb                = steadystateprob(self.Pssb)
     if self.initsdist=='steadystate': self.initsdist = self.dsb
 
@@ -88,6 +88,27 @@ class MDP(object):
 
   def isTerminal(self):
     return self.Gamma[self.s, self.s] == 0.0
+  
+  def getPhi(self, ftype, ns, nf=None, rndobj=None):
+    Phi = 0.0
+    if ftype=='tabular':
+      Phi = np.eye(ns)
+    elif ftype=='binary':
+      nf = int(np.ceil(np.log(ns+1)/np.log(2)))
+      Phi = np.zeros((ns, nf))
+      for i in range(ns):
+        for j in range(nf):
+          Phi[i, nf-j-1] = ((i+1)>>j) & 1
+        a = sum(Phi[i,]*Phi[i,])
+        Phi[i,] = Phi[i,]/np.sqrt(a)
+    elif ftype=='normal':
+      Phi = np.zeros((ns, nf))
+      for i in range(ns):
+        for j in range(nf):
+          Phi[i, j] = rndobj.normal(0, 1)
+        a = sum(Phi[i,]*Phi[i,])
+        Phi[i,] = Phi[i,]/np.sqrt(a)
+    return Phi    
 
 ## general ergodic MDP, general gamma 
 ## Pssa is of s X s' X a form
@@ -113,28 +134,6 @@ def getPolInducedModel(Pssa, Rssa, pol):
 
     return (Pss, ExpR)
      
-def getPhi(ftype, ns, nf=None, rndobj=None):
-  if ftype=='tabular':
-    Phi = np.eye(ns)
-    return Phi
-  if ftype=='binary':
-    nf = int(np.ceil(np.log(ns+1)/np.log(2)))
-    Phi = np.zeros((ns, nf))
-    for i in range(ns):
-      for j in range(nf):
-        Phi[i, nf-j-1] = ((i+1)>>j) & 1
-      a = sum(Phi[i,]*Phi[i,])
-      Phi[i,] = Phi[i,]/np.sqrt(a)
-    return Phi
-  if ftype=='normal':
-    Phi = np.zeros((ns, nf))
-    for i in range(ns):
-      for j in range(nf):
-        Phi[i, j] = rndobj.normal(0, 1)
-      a = sum(Phi[i,]*Phi[i,])
-      Phi[i,] = Phi[i,]/np.sqrt(a)
-    return Phi    
-  
 def steadystateprob(Pss):
   (eigvals, eigvecs) = pl.eig(Pss.T)
   eigi = np.argmax(eigvals)
@@ -235,6 +234,7 @@ class PerformanceMeasure(object):
       Pss             = prob.Pssb
       expr            = prob.exprb      
     self.thstar       = getFixedPoint(Pss, expr, prob.Phi, prob.dsb, prob.Gamma, 1.)
+    self.thstarMSPBE  = getFixedPoint(Pss, expr, prob.Phi, prob.dsb, prob.Gamma, params['lmbda'])
     self.VTrueProj    = np.dot(prob.Phi, self.thstar)
     self.D            = np.diag(prob.dsb)
     self.normFactor   = np.dot(self.VTrueProj, np.dot(self.D, self.VTrueProj))

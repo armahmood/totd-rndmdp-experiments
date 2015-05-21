@@ -31,7 +31,7 @@ def main():
                    'targtRight': 0.99,
                    'alpha'     : alpha,
                    'beta'      : beta,
-                   'lambda'    : lm
+                   'lmbda'     : lm
                    }
                    for alpha in alphas
                    for beta in betas

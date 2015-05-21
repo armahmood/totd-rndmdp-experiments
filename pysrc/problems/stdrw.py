@@ -254,6 +254,27 @@ class StdRandomWalk2(MDP): # same problem implemented through MDP class
     self.targtRight   = params['targtRight']
     MDP.__init__(self,params)
 
+  def getPhi(self, ftype, ns, nf=None, rndobj=None):
+    if ftype=='tabular':
+      Phi = np.eye(ns)
+    elif ftype=='binary':
+      nf = int(np.ceil(np.log(ns+1)/np.log(2)))
+      Phi = np.zeros((ns, nf))
+      for i in range(ns):
+        for j in range(nf):
+          Phi[i, nf-j-1] = ((i+1)>>j) & 1
+        a = sum(Phi[i,]*Phi[i,])
+        Phi[i,] = Phi[i,]/np.sqrt(a)
+    elif ftype=='normal':
+      Phi = np.zeros((ns, nf))
+      for i in range(ns):
+        for j in range(nf):
+          Phi[i, j] = rndobj.normal(0, 1)
+        a = sum(Phi[i,]*Phi[i,])
+        Phi[i,] = Phi[i,]/np.sqrt(a)
+  
+    return Phi    
+
   def getPssa(self):
     Pssa = np.zeros((self.ns, self.ns, 2));
     Pssa[0,0,0] = Pssa[0,0,1] = Pssa[self.ns-1,self.ns-1,0] \
