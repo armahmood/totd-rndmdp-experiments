@@ -255,26 +255,57 @@ class StdRandomWalk2(MDP): # same problem implemented through MDP class
     MDP.__init__(self,params)
 
   def getPhi(self, ftype, ns, nf=None, rndobj=None):
+    nzG              = np.diag(self.Gamma)!=0.0
     if ftype=='tabular':
-      Phi = np.eye(ns)
+      Phi                   = np.zeros((ns, np.sum(nzG)))
+      Phi[nzG, :] = np.eye(np.sum(nzG))
     elif ftype=='binary':
-      nf = int(np.ceil(np.log(ns+1)/np.log(2)))
+      nf = int(np.ceil(np.log(np.sum(nzG)+1)/np.log(2)))
+      Phi   = np.zeros((ns, nf))
+      _Phi  = Phi[nzG, :]
+      for i in range(np.sum(nzG)):
+        for j in range(nf):
+          _Phi[i, nf-j-1] = ((i+1)>>j) & 1
+      Phi[nzG,:] = _Phi
+    elif ftype=='nbinary':
+      nf = int(np.ceil(np.log(np.sum(nzG)+1)/np.log(2)))
+      Phi   = np.zeros((ns, nf))
+      _Phi  = Phi[nzG, :]
+      for i in range(np.sum(nzG)):
+        for j in range(nf):
+          _Phi[i, nf-j-1] = ((i+1)>>j) & 1
+        a = sum(_Phi[i,]*_Phi[i,])
+        _Phi[i,] = _Phi[i,]/np.sqrt(a)
+      Phi[nzG,:] = _Phi
+    elif ftype=='normal':
       Phi = np.zeros((ns, nf))
       for i in range(ns):
         for j in range(nf):
-          Phi[i, nf-j-1] = ((i+1)>>j) & 1
-        a = sum(Phi[i,]*Phi[i,])
-        Phi[i,] = Phi[i,]/np.sqrt(a)
-    elif ftype=='normal':
+          Phi[i, j] = rndobj.normal(0, 1)
+      Phi[~nzG,:]       = 0.0
+    elif ftype=='nnormal':
       Phi = np.zeros((ns, nf))
       for i in range(ns):
         for j in range(nf):
           Phi[i, j] = rndobj.normal(0, 1)
         a = sum(Phi[i,]*Phi[i,])
         Phi[i,] = Phi[i,]/np.sqrt(a)
-    #zeroGammas              = np.diag(self.Gamma)==0.0
-    #Phi[zeroGammas,:]       = 0.0
+      Phi[~nzG,:]       = 0.0
     return Phi    
+
+  @staticmethod
+  def getFixedPoint(Pss, ExpR, Phi, ds, Gamma, Lmbda):
+    D = np.diag(ds)
+    nzG                 = np.diag(Gamma)!=0.0
+    ns                  = np.sum(nzG) 
+    if np.isscalar(Lmbda): Lmbda = np.diag(np.ones(ns)*Lmbda)
+    ImPGLinv = pl.inv(np.eye(ns)- np.dot(Pss[np.ix_(nzG,nzG)], np.dot(Gamma[np.ix_(nzG,nzG)], Lmbda)))
+    PhiTD = np.dot(Phi[nzG,:].T, D[np.ix_(nzG,nzG)])
+    ImPG = np.eye(ns) - np.dot(Pss[np.ix_(nzG,nzG)], Gamma[np.ix_(nzG,nzG)])
+    A = np.dot(np.dot(PhiTD, ImPGLinv), np.dot(ImPG, Phi[nzG,:]))
+    b = np.dot(PhiTD, np.dot(ImPGLinv, ExpR[nzG]))
+    thstar = np.dot(pl.inv(A), b)
+    return thstar
 
   def getPssa(self):
     Pssa = np.zeros((self.ns, self.ns, 2));

@@ -18,6 +18,7 @@ class Test(unittest.TestCase):
     gm = np.ones(ns) * gamma
     gm[0] = gm[ns - 1] = 0
     Gamma = np.diag(gm)
+    nzG              = np.diag(Gamma)!=0.0
     initdist = np.zeros(ns)
     initdist[(ns - 1) / 2] = 1.
     config = {
@@ -27,7 +28,7 @@ class Test(unittest.TestCase):
               'behavRight': 0.5,
               'targtRight': 0.9,
               'runseed'   : 1,
-              'nf'        : ns,
+              'nf'        : np.sum(nzG),
               'Gamma'     : Gamma,
               'initsdist' : initdist,
               'Rstd'      : 0.0,
@@ -38,7 +39,7 @@ class Test(unittest.TestCase):
     probvisit = np.zeros(ns)
     rwprob.initTrajectory(config['runseed'])
     ep = 0
-    while ep < 2000:
+    while ep < 200:
       rets = rwprob.step()
       assert((rets['s'] != ns - 2 and rets['R'] == 0.0) \
                or (rets['s'] == ns - 2 and rets['act'] == 0 and rets['R'] == 0.0)\
@@ -56,6 +57,7 @@ class Test(unittest.TestCase):
     gm = np.ones(ns) * gamma
     gm[0] = gm[ns - 1] = 0
     Gamma = np.diag(gm)
+    nzG              = np.diag(Gamma)!=0.0
     initdist = np.zeros(ns)
     initdist[(ns - 1) / 2] = 1.
     config2 = {
@@ -64,13 +66,13 @@ class Test(unittest.TestCase):
               'Gamma'     : Gamma,
               'initsdist' : initdist,
               'Rstd'      : 0.0,
-              'T'         : 400,
-              'N'         : 400,
+              'T'         : 200,
+              'N'         : 200,
               'ftype'     : 'tabular',
               'ns'        : ns,
               'na'        : 2,
               'runseed'   : 1,
-              'nf'        : ns,
+              'nf'        : np.sum(nzG),
               'behavRight': 0.5,
               'targtRight': 0.9,
               'lmbda'    : 0.5,
@@ -93,6 +95,7 @@ class Test(unittest.TestCase):
     gm = np.ones(ns) * gamma
     gm[0] = gm[ns - 1] = 0
     Gamma = np.diag(gm)
+    nzG              = np.diag(Gamma)!=0.0
     initdist = np.zeros(ns)
     initdist[(ns - 1) / 2] = 1.
     config2 = {
@@ -107,7 +110,7 @@ class Test(unittest.TestCase):
               'ns'        : ns,
               'na'        : 2,
               'runseed'   : 1,
-              'nf'        : int(np.ceil(np.log(ns+1)/np.log(2))),
+              'nf'        : int(np.ceil(np.log(np.sum(nzG)+1)/np.log(2))),
               'behavRight': 0.5,
               'targtRight': 0.9,
               'lmbda'    : 0.5,

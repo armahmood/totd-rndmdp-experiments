@@ -12,6 +12,7 @@ def main():
   gm      = np.ones(ns)*gamma
   gm[0]   = gm[ns-1] = 0
   Gamma   = np.diag(gm)
+  nzG              = np.diag(Gamma)!=0.0
   initdist= np.zeros(ns)
   initdist[(ns-1)/2] = 1.
   configs     = [
@@ -26,7 +27,7 @@ def main():
                    'ftype'     : ftype,
                    'ns'        : ns,
                    'na'        : 2,
-                   'nf'        : ns,
+                   'nf'        : np.sum(nzG),
                    'behavRight': 0.5,
                    'targtRight': 0.99,
                    'alpha'     : alpha,
