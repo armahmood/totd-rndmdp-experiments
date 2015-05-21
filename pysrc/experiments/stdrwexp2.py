@@ -3,7 +3,7 @@ Created on Mar 24, 2015
 
 @author: A. Rupam Mahmood
 
-This module instantiates an algorithm and the standard random walk 
+This module instantiates an algorithm and a random walk 
 problem (see Mahmood, van Hasselt & Sutton 2014, nips) and runs an experiment.
 
 '''
@@ -15,9 +15,12 @@ import argparse
 from pysrc.problems.mdp import PerformanceMeasure
 from pysrc.problems.stdrwsparsereward import StdRWSparseReward2
 from pysrc.problems.stdrwfreqreward import StdRWFreqReward2
-from pysrc.algorithms.tdprediction.offpolicy import oislstd
 from pysrc.algorithms.tdprediction.offpolicy import wislstd
 from pysrc.algorithms.tdprediction.offpolicy import gtd
+from pysrc.algorithms.tdprediction.offpolicy import togtd
+from pysrc.algorithms.tdprediction.offpolicy import wtd
+from pysrc.algorithms.tdprediction.offpolicy import wgtd
+from pysrc.algorithms.tdprediction.offpolicy import wtogtd
 import cPickle as pickle
 
 def runoneconfig(config, prob, alg, perf):
@@ -50,9 +53,12 @@ def main():
   f             = open(filepathname, 'wb')
   
   algs  = {
-           'oislstd':oislstd.OISLSTD,
-           'wislstd':wislstd.WISLSTD,
-           'gtd':gtd.GTD,
+           'gtd':gtd.GTD, \
+           'togtd':togtd.TOGTD,\
+           'wislstd':wislstd.WISLSTD,\
+           'wistd':wtd.WTD, \
+           'wgtd':wgtd.WGTD, \
+           'wtogtd':wtogtd.WTOGTD,         
            }
   probs = {
            'StdRWSparseReward2'  : StdRWSparseReward2,
