@@ -5,11 +5,11 @@ Created on Mar 27, 2015
 '''
 import unittest
 import numpy as np
-from pysrc.problems.stdrwsparsereward import StdRWSparseReward
-from pysrc.problems.stdrwfreqreward import StdRWFreqReward
+from pysrc.problems.stdrwsparsereward import StdRWSparseReward2
+from pysrc.problems.stdrwfreqreward import StdRWFreqReward2
 from pysrc.algorithms.tdprediction.offpolicy.wtogtd import WTOGTD
-import pysrc.experiments.stdrwexp as stdrwexp
-from pysrc.problems.stdrw import PerformanceMeasure
+import pysrc.experiments.stdrwexp2 as stdrwexp2
+from pysrc.problems.mdp import PerformanceMeasure
 from pysrc.problems import mdp
 from pysrc.problems.simpletwostate import SimpleTwoState
 
@@ -17,80 +17,116 @@ class Test(unittest.TestCase):
 
   def testonsparserewardtabular(self):
     ns = 13
+    gamma = 0.9
+    gm = np.ones(ns) * gamma
+    gm[0] = gm[ns - 1] = 0
+    Gamma = np.diag(gm)
+    nzG              = np.diag(Gamma)!=0.0
+    initdist = np.zeros(ns)
+    initdist[(ns - 1) / 2] = 1.
     config = {
+              'offpolicy' : True,
+              'mdpseed'   : 1000,
+              'Gamma'     : Gamma,
+              'initsdist' : initdist,
+              'Rstd'      : 0.0,
+              'T'         : 200,
               'N'      : 200,
               'ftype'     : 'tabular',
               'ns'        : ns,
-              'inits'     : (ns-1)/2,
-              'mright'    : 0.5,
-              'pright'    : 0.9,
+              'na'        : 2,
+              'behavRight': 0.5,
+              'targtRight': 0.9,
               'runseed'   : 1,
-              'nf'        : ns-2,
-              'gamma'     : 0.9,
-              'lambda'    : 0.5,
-              'eta'       : 0.01,
-              'initd'     : 0.01,
+              'nf'        : np.sum(nzG),
+              'lmbda'    : 0.5,
+              'eta'       : 0.05,
+              'initd'     : 0.0,
               'beta'      : 0.0
               }
     alg         = WTOGTD(config)
-    rwprob      = StdRWSparseReward(config)
+    rwprob      = StdRWSparseReward2(config)
     perf      = PerformanceMeasure(config, rwprob)
-    stdrwexp.runoneconfig(config, rwprob, alg, perf)
+    stdrwexp2.runoneconfig(config, rwprob, alg, perf)
     print "tabular"
-    print perf.thstarMSE.T[0]
+    print perf.thstar.T
     print alg.th
-    assert (abs(perf.thstarMSE.T[0] - alg.th) < 0.05).all()
+    assert (abs(perf.thstar.T - alg.th) < 0.05).all()
 
   def testonsparserewardbinary(self):
     ns = 13
+    gamma = 0.9
+    gm = np.ones(ns) * gamma
+    gm[0] = gm[ns - 1] = 0
+    Gamma = np.diag(gm)
+    nzG              = np.diag(Gamma)!=0.0
+    initdist = np.zeros(ns)
+    initdist[(ns - 1) / 2] = 1.
     config = {
+              'offpolicy' : True,
+              'mdpseed'   : 1000,
+              'Gamma'     : Gamma,
+              'initsdist' : initdist,
+              'Rstd'      : 0.0,
+              'T'         : 200,
               'N'      : 200,
               'ftype'     : 'binary',
               'ns'        : ns,
-              'inits'     : (ns-1)/2,
-              'mright'    : 0.5,
-              'pright'    : 0.9,
+              'na'        : 2,
+              'behavRight': 0.5,
+              'targtRight': 0.9,
               'runseed'   : 1,
-              'nf'        : int(np.ceil(np.log(ns-1)/np.log(2))),
-              'gamma'     : 0.9,
-              'lambda'    : 0.5,
+              'nf'        : int(np.ceil(np.log(np.sum(nzG)+1)/np.log(2))),
+              'lmbda'    : 0.5,
               'eta'       : 0.01,
               'initd'     : 0.01,
               'beta'      : 0.0
               }
     alg         = WTOGTD(config)
-    rwprob      = StdRWSparseReward(config)
+    rwprob      = StdRWSparseReward2(config)
     perf      = PerformanceMeasure(config, rwprob)
-    stdrwexp.runoneconfig(config, rwprob, alg, perf)
+    stdrwexp2.runoneconfig(config, rwprob, alg, perf)
     print "binary"
-    print perf.thstarMSPBE.T[0]
+    print perf.thstarMSPBE.T
     print alg.th
-    assert (abs(perf.thstarMSPBE.T[0] - alg.th) < 0.05).all()
+    assert (abs(perf.thstarMSPBE.T - alg.th) < 0.05).all()
 
   def testonfreqrewardtabular(self):
     ns = 7
+    gamma = 0.9
+    gm = np.ones(ns) * gamma
+    gm[0] = gm[ns - 1] = 0
+    Gamma = np.diag(gm)
+    nzG              = np.diag(Gamma)!=0.0
+    initdist = np.zeros(ns)
+    initdist[(ns - 1) / 2] = 1.
     config = {
+              'offpolicy' : True,
+              'mdpseed'   : 1000,
+              'Gamma'     : Gamma,
+              'initsdist' : initdist,
+              'Rstd'      : 0.0,
+              'T'         : 500,
               'N'      : 500,
               'ftype'     : 'tabular',
               'ns'        : ns,
-              'inits'     : (ns-1)/2,
-              'mright'    : 0.5,
-              'pright'    : 0.9,
+              'na'        : 2,
+              'behavRight': 0.5,
+              'targtRight': 0.9,
               'runseed'   : 1,
-              'nf'        : ns-2,
-              'gamma'     : 0.9,
-              'lambda'    : 0.5,
+              'nf'        : np.sum(nzG),
+              'lmbda'    : 0.5,
               'eta'       : 0.00,
               'initd'     : 0.00,
               'beta'      : 0.0
               }
     alg         = WTOGTD(config)
-    rwprob      = StdRWFreqReward(config)
+    rwprob      = StdRWFreqReward2(config)
     perf      = PerformanceMeasure(config, rwprob)
-    stdrwexp.runoneconfig(config, rwprob, alg, perf)
-    print perf.thstarMSE.T[0]
+    stdrwexp2.runoneconfig(config, rwprob, alg, perf)
+    print perf.thstar.T
     print alg.th
-    assert (abs(perf.thstarMSE.T[0] - alg.th) < 0.1).all()
+    assert (abs(perf.thstar.T - alg.th) < 0.05).all()
 
   def testOnSimpleTwoStateFuncApprox(self):
     config = \
@@ -101,7 +137,7 @@ class Test(unittest.TestCase):
       'initsdist' : 'steadystate',
       'Gamma'     : 0.9*np.eye(2),
       'mdpseed'   : 1000,
-      'lambda'    : 0.0,
+      'lmbda'    : 0.0,
       'eta'       : 0.005,
       'initd'     : 0.0,
       'beta'      : 0.0
@@ -115,7 +151,7 @@ class Test(unittest.TestCase):
     # off-policy fixed point
     thstar3 = mdp.MDP.getFixedPoint(prob.Psst, prob.exprt,\
                       prob.Phi, prob.dsb,\
-                      prob.Gamma, config['lambda'])
+                      prob.Gamma, config['lmbda'])
     print(thstar3)
     
     runseed = 0
@@ -124,8 +160,8 @@ class Test(unittest.TestCase):
       probstep  = prob.step()
       s                 = probstep['s']
       a                 = probstep['act']
-      probstep['l']     = config['lambda']
-      probstep['lnext'] = config['lambda']
+      probstep['l']     = config['lmbda']
+      probstep['lnext'] = config['lmbda']
       probstep['rho']   = prob.getRho(s,a)
       alg.step(probstep)
     print(alg.th)
