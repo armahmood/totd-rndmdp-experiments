@@ -1,20 +1,21 @@
 '''
-Created on Jun 2, 2014
+Created on Jan 2015
 
-@author: ashique
+@author: A. Rupam Mahmood
 '''
 
 import numpy as np
 import pylab as pl
 from pysrc.algorithms.tdprediction.tdprediction import TDPrediction
 
-class WISTD(TDPrediction):
+class WTD(TDPrediction):
   
   def __init__(self, config):
     
-    TDPrediction.__init__(self,config)
+    self.nf     = config['nf']
     self.eta    = config['eta']
     self.initd  = config['initd']
+    self.th     = np.zeros(self.nf)
     self.z      = np.zeros(self.nf)
     self.u      = np.zeros(self.nf)
     self.d      = np.ones(self.nf)*self.initd
