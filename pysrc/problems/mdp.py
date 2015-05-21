@@ -110,6 +110,18 @@ class MDP(object):
         Phi[i,] = Phi[i,]/np.sqrt(a)
     return Phi    
 
+  @staticmethod
+  def getFixedPoint(Pss, ExpR, Phi, ds, Gamma, Lmbda):
+    (ns, ns) = np.shape(Pss)
+    D = np.diag(ds)
+    ImPGLinv = pl.inv(np.eye(ns)- np.dot(Pss, np.dot(Gamma, Lmbda)))
+    PhiTD = np.dot(Phi.T, D)
+    ImPG = np.eye(ns) - np.dot(Pss, Gamma)
+    A = np.dot(np.dot(PhiTD, ImPGLinv), np.dot(ImPG, Phi))
+    b = np.dot(PhiTD, np.dot(ImPGLinv, ExpR))
+    thstar = np.dot(pl.inv(A), b)
+    return thstar
+
 ## general ergodic MDP, general gamma 
 ## Pssa is of s X s' X a form
 
@@ -165,17 +177,6 @@ def getExpR(Rsa, pol):
   ExpR = np.zeros(ns)
   for i in range(ns): ExpR[i] = np.dot(pol[i,], Rsa[i,])
   return ExpR
-
-def getFixedPoint(Pss, ExpR, Phi, ds, Gamma, Lmbda):
-  (ns, ns) = np.shape(Pss)
-  D = np.diag(ds)
-  ImPGLinv = pl.inv(np.eye(ns)- np.dot(Pss, np.dot(Gamma, Lmbda)))
-  PhiTD = np.dot(Phi.T, D)
-  ImPG = np.eye(ns) - np.dot(Pss, Gamma)
-  A = np.dot(np.dot(PhiTD, ImPGLinv), np.dot(ImPG, Phi))
-  b = np.dot(PhiTD, np.dot(ImPGLinv, ExpR))
-  thstar = np.dot(pl.inv(A), b)
-  return thstar
 
 def getRandomlySampledPolicy(ns, na, rndobj, coverage=True):
   pol = np.reshape(np.array([rndobj.uniform(0, 1) + coverage*10**-15 for i in range(ns*na)]), (ns, na) )
@@ -233,8 +234,8 @@ class PerformanceMeasure(object):
     else:
       Pss             = prob.Pssb
       expr            = prob.exprb      
-    self.thstar       = getFixedPoint(Pss, expr, prob.Phi, prob.dsb, prob.Gamma, 1.)
-    self.thstarMSPBE  = getFixedPoint(Pss, expr, prob.Phi, prob.dsb, prob.Gamma, params['lmbda'])
+    self.thstar       = prob.getFixedPoint(Pss, expr, prob.Phi, prob.dsb, prob.Gamma, 1.)
+    self.thstarMSPBE  = prob.getFixedPoint(Pss, expr, prob.Phi, prob.dsb, prob.Gamma, params['lmbda'])
     self.VTrueProj    = np.dot(prob.Phi, self.thstar)
     self.D            = np.diag(prob.dsb)
     self.normFactor   = np.dot(self.VTrueProj, np.dot(self.D, self.VTrueProj))

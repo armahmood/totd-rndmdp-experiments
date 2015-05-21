@@ -272,7 +272,8 @@ class StdRandomWalk2(MDP): # same problem implemented through MDP class
           Phi[i, j] = rndobj.normal(0, 1)
         a = sum(Phi[i,]*Phi[i,])
         Phi[i,] = Phi[i,]/np.sqrt(a)
-  
+    #zeroGammas              = np.diag(self.Gamma)==0.0
+    #Phi[zeroGammas,:]       = 0.0
     return Phi    
 
   def getPssa(self):

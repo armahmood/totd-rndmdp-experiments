@@ -28,20 +28,20 @@ class Test(unittest.TestCase):
     ''' Test fixed points '''
     
     # behavior on-policy fixed point
-    thstar1 = mdp.getFixedPoint(prob.Pssb, prob.exprb,\
+    thstar1 = mdp.MDP.getFixedPoint(prob.Pssb, prob.exprb,\
                       prob.Phi, prob.dsb, prob.Gamma, 1.)
     print(thstar1)
     assert((abs(thstar1-np.array([-0.5, 0.5]))<10**-10).all())
     
     # target on-policy fixed point
-    thstar2 = mdp.getFixedPoint(prob.Psst, prob.exprt,\
+    thstar2 = mdp.MDP.getFixedPoint(prob.Psst, prob.exprt,\
                       prob.Phi, mdp.steadystateprob(prob.Psst),\
                       prob.Gamma, 1.)
     print(thstar2)
     assert((abs(thstar2-np.array([7.1, 8.1]))<10**-10).all())
 
     # off-policy fixed point
-    thstar3 = mdp.getFixedPoint(prob.Psst, prob.exprt,\
+    thstar3 = mdp.MDP.getFixedPoint(prob.Psst, prob.exprt,\
                       prob.Phi, prob.dsb,\
                       prob.Gamma, 1.)
     print(thstar3)
@@ -64,20 +64,20 @@ class Test(unittest.TestCase):
     ''' Test fixed points '''
     
     # behavior on-policy fixed point
-    thstar1 = mdp.getFixedPoint(prob.Pssb, prob.exprb,\
+    thstar1 = mdp.MDP.getFixedPoint(prob.Pssb, prob.exprb,\
                       prob.Phi, prob.dsb, prob.Gamma, 1.)
     print thstar1
     assert((abs(thstar1-np.array([0.0]))<10**-10).all())    
     
     # target on-policy fixed point
-    thstar2 = mdp.getFixedPoint(prob.Psst, prob.exprt,\
+    thstar2 = mdp.MDP.getFixedPoint(prob.Psst, prob.exprt,\
                       prob.Phi, mdp.steadystateprob(prob.Psst),\
                       prob.Gamma, 1.)
     print thstar2
     assert((abs(thstar2-np.array([8.0]))<10**-10).all())    
 
     # off-policy fixed point
-    thstar3 = mdp.getFixedPoint(prob.Psst, prob.exprt,\
+    thstar3 = mdp.MDP.getFixedPoint(prob.Psst, prob.exprt,\
                       prob.Phi, prob.dsb,\
                       prob.Gamma, 1.)
     print thstar3

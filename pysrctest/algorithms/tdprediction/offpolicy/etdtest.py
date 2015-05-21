@@ -106,7 +106,7 @@ class Test(unittest.TestCase):
     ''' Test fixed points '''
     
     # off-policy fixed point
-    thstar3 = mdp.getFixedPoint(prob.Psst, prob.exprt,\
+    thstar3 = mdp.MDP.getFixedPoint(prob.Psst, prob.exprt,\
                       prob.Phi, prob.dsb,\
                       prob.Gamma, 1.)
     print(thstar3)
@@ -145,14 +145,14 @@ class Test(unittest.TestCase):
     ''' Test fixed points '''
     
     # target on-policy fixed point
-    thstar0 = mdp.getFixedPoint(prob.Psst, prob.exprt,\
+    thstar0 = mdp.MDP.getFixedPoint(prob.Psst, prob.exprt,\
                       prob.Phi, mdp.steadystateprob(prob.Psst),\
                       prob.Gamma, lmbda)
     print(mdp.steadystateprob(prob.Psst))
     print thstar0
 
     # off-policy fixed point
-    thstar1 = mdp.getFixedPoint(prob.Psst, prob.exprt,\
+    thstar1 = mdp.MDP.getFixedPoint(prob.Psst, prob.exprt,\
                       prob.Phi, prob.dsb,\
                       prob.Gamma, lmbda)
     print(prob.dsb)
@@ -164,7 +164,7 @@ class Test(unittest.TestCase):
     ImPL    = np.dot( pl.inv(ImPLG), ImPG )
     m       = np.dot(prob.dsb.T, pl.inv(ImPL))
     m       = m/np.sum(m)
-    thstar2 = mdp.getFixedPoint(prob.Psst, prob.exprt,\
+    thstar2 = mdp.MDP.getFixedPoint(prob.Psst, prob.exprt,\
                       prob.Phi, m,\
                       prob.Gamma, lmbda)
     print(m)

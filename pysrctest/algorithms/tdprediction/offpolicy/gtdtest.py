@@ -109,7 +109,7 @@ class Test(unittest.TestCase):
     ''' Test fixed points '''
     
     # off-policy fixed point
-    thstar3 = mdp.getFixedPoint(prob.Psst, prob.exprt,\
+    thstar3 = mdp.MDP.getFixedPoint(prob.Psst, prob.exprt,\
                       prob.Phi, prob.dsb,\
                       prob.Gamma, config['lambda'])
     print(thstar3)
