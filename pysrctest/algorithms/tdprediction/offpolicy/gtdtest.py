@@ -35,6 +35,7 @@ class Test(unittest.TestCase):
     rwprob      = StdRWSparseReward(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp.runoneconfig(config, rwprob, alg, perf)
+    print "tabular"
     print perf.thstarMSE.T[0]
     print alg.th
     assert (abs(perf.thstarMSE.T[0] - alg.th) < 0.05).all()

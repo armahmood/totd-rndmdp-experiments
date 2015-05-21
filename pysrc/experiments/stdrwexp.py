@@ -33,7 +33,7 @@ def runoneconfig(config, prob, alg, perf):
       probstep['lnext'] = config['lambda']
       probstep['rho']   = prob.getRho(s,a)
       alg.step(probstep)
-      perf.calcMse(alg, ep)
+    perf.calcMse(alg, ep)
       
 def main():
   parser          = argparse.ArgumentParser()

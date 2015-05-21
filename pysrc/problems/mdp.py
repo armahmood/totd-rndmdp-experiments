@@ -228,7 +228,13 @@ class PerformanceMeasure(object):
     self.T            = params['T'] # number of total steps
     self.N            = params['N'] # number of data points to store
     self.Phi          = prob.Phi
-    self.thstar       = getFixedPoint(prob.Pssb, prob.exprb, prob.Phi, prob.dsb, prob.Gamma, 1.)
+    if 'offpolicy' in params and params['offpolicy']==True:
+      Pss             = prob.Psst
+      expr            = prob.exprt
+    else:
+      Pss             = prob.Pssb
+      expr            = prob.exprb      
+    self.thstar       = getFixedPoint(Pss, expr, prob.Phi, prob.dsb, prob.Gamma, 1.)
     self.VTrueProj    = np.dot(prob.Phi, self.thstar)
     self.D            = np.diag(prob.dsb)
     self.normFactor   = np.dot(self.VTrueProj, np.dot(self.D, self.VTrueProj))
