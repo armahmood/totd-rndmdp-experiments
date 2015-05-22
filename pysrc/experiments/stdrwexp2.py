@@ -15,6 +15,8 @@ import argparse
 from pysrc.problems.mdp import PerformanceMeasure
 from pysrc.problems.stdrwsparsereward import StdRWSparseReward2
 from pysrc.problems.stdrwfreqreward import StdRWFreqReward2
+from pysrc.algorithms.tdprediction.offpolicy import oislstd
+from pysrc.algorithms.tdprediction.offpolicy import olstd2
 from pysrc.algorithms.tdprediction.offpolicy import wislstd
 from pysrc.algorithms.tdprediction.offpolicy import gtd
 from pysrc.algorithms.tdprediction.offpolicy import togtd
@@ -55,6 +57,8 @@ def main():
   algs  = {
            'gtd':gtd.GTD, \
            'togtd':togtd.TOGTD,\
+           'oislstd':oislstd.OISLSTD,\
+           'olstd2':olstd2.OLSTD2,\
            'wislstd':wislstd.WISLSTD,\
            'wistd':wtd.WTD, \
            'wgtd':wgtd.WGTD, \
