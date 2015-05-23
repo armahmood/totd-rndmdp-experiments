@@ -31,7 +31,7 @@ def main():
                    'behavRight': 0.5,
                    'targtRight': 0.99,
                    'inita'     : inita,
-                   'lambda'    : lm
+                   'lmbda'    : lm
                    }
                    for inita in initas
                    for lm in lms

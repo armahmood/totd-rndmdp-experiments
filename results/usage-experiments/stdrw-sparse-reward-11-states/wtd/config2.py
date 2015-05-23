@@ -34,7 +34,7 @@ def main():
                    'targtRight': 0.99,
                    'eta'       : min(etas, key=lambda x:abs(x-ratio/initd)),
                    'initd'     : initd,
-                   'lambda'    : lm
+                   'lmbda'    : lm
                    }
                  for ratio in ratios
                  for initd in initds

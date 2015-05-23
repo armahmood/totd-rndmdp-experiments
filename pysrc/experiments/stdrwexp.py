@@ -16,8 +16,13 @@ from pysrc.problems.stdrw import PerformanceMeasure
 from pysrc.problems.stdrwsparsereward import StdRWSparseReward
 from pysrc.problems.stdrwfreqreward import StdRWFreqReward
 from pysrc.algorithms.tdprediction.offpolicy import oislstd
+from pysrc.algorithms.tdprediction.offpolicy import olstd2
 from pysrc.algorithms.tdprediction.offpolicy import wislstd
 from pysrc.algorithms.tdprediction.offpolicy import gtd
+from pysrc.algorithms.tdprediction.offpolicy import togtd
+from pysrc.algorithms.tdprediction.offpolicy import wtd
+from pysrc.algorithms.tdprediction.offpolicy import wgtd
+from pysrc.algorithms.tdprediction.offpolicy import wtogtd
 import cPickle as pickle
 
 def runoneconfig(config, prob, alg, perf):
@@ -50,9 +55,14 @@ def main():
   f             = open(filepathname, 'wb')
   
   algs  = {
-           'oislstd':oislstd.OISLSTD,
-           'wislstd':wislstd.WISLSTD,
-           'gtd':gtd.GTD,
+           'gtd':gtd.GTD, \
+           'togtd':togtd.TOGTD,\
+           'oislstd':oislstd.OISLSTD,\
+           'olstd2':olstd2.OLSTD2,\
+           'wislstd':wislstd.WISLSTD,\
+           'wistd':wtd.WTD, \
+           'wgtd':wgtd.WGTD, \
+           'wtogtd':wtogtd.WTOGTD,         
            }
   probs = {
            'StdRWSparseReward'  : StdRWSparseReward,

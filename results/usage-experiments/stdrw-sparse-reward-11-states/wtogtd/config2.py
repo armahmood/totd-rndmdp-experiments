@@ -36,7 +36,7 @@ def main():
                    'eta'       : min(etas, key=lambda x:abs(x-ratio/initd)),
                    'initd'     : initd,
                    'beta'      : beta,
-                   'lambda'    : lm
+                   'lmbda'    : lm
                    }
                  for ratio in ratios
                  for initd in initds

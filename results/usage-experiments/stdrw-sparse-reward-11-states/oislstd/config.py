@@ -11,8 +11,10 @@ initas    = 10**np.arange(-3, 3.1, .2)
 lms       = np.concatenate((np.arange(0, .9, .1), np.arange(.9, 1.01, .01)))
 configs     = [
                  {
+                   'ns'        : ns,
+                 'algname'   : 'oislstd',
                  'gamma'     : 1.0,
-                 'neps'      : 100,
+                 'N'      : 100,
                  'ftype'     : ftype,
                  'nstates'   : ns,
                  'nf'        : nf,
@@ -26,6 +28,6 @@ configs     = [
                  for lm in lms
               ]
 
-f = open('config.dat', 'wb')
+f = open('config.pkl', 'wb')
 
 pickle.dump(configs, f)
