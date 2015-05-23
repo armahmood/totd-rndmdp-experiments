@@ -60,7 +60,7 @@ def main():
            'oislstd':oislstd.OISLSTD,\
            'olstd2':olstd2.OLSTD2,\
            'wislstd':wislstd.WISLSTD,\
-           'wistd':wtd.WTD, \
+           'wtd':wtd.WTD, \
            'wgtd':wgtd.WGTD, \
            'wtogtd':wtogtd.WTOGTD,         
            }
