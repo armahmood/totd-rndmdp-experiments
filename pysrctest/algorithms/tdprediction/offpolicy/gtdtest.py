@@ -92,6 +92,7 @@ class Test(unittest.TestCase):
   def testGtdOnSimpleTwoStateFuncApprox(self):
     config = \
     {
+      'offpolicy' : True,
       'nf'        : 1,
       'ftype'     : None,
       'Rstd'      : 0.0,
@@ -99,10 +100,10 @@ class Test(unittest.TestCase):
       'Gamma'     : 0.9*np.eye(2),
       'mdpseed'   : 1000,
       'lambda'    : 0.,
-      'alpha'     : 0.005,
+      'alpha'     : 0.025,
       'beta'      : 0.0
     }
-    T         = 10000
+    T         = 1000
     rwprob1      = SimpleTwoState(config)
     rwprob1.Phi  = np.array([[1], [1]])
     alg       = GTD(config)

@@ -18,6 +18,7 @@ def main():
   initdist[(ns-1)/2] = 1.
   configs     = [
                    {
+                   'offpolicy' : True,
                    'algname'   : 'gtd',
                    'mdpseed'   : 1000,
                    'Gamma'     : Gamma,

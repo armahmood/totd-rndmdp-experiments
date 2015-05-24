@@ -20,6 +20,7 @@ class Test(unittest.TestCase):
     lmbda   = 0.
     config  = \
     {
+      'offpolicy' : True,
       'nf'        : 1,
       'ftype'     : None,
       'Rstd'      : 0.0,

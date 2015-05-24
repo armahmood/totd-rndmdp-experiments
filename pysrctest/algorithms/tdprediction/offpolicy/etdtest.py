@@ -88,46 +88,11 @@ class Test(unittest.TestCase):
     print alg.th
     assert (abs(perf.thstarMSE.T[0] - alg.th) < 0.06).all()
 
-  def testEtdOnSimpleTwoStateTabular(self):
-    config = \
-    {
-      'nf'        : 2,
-      'ftype'     : 'tabular',
-      'Rstd'      : 0.0,
-      'initsdist' : 'steadystate',
-      'Gamma'     : 0.9*np.eye(2),
-      'mdpseed'   : 1000,
-      'lambda'    : 0.5,
-      'alpha'     : 0.0003,
-    }
-    T       = 60000
-    rwprob1    = SimpleTwoState(config)
-    alg     = ETD(config)
-    ''' Test fixed points '''
-    
-    # off-policy fixed point
-    thstar3 = mdp.MDP.getFixedPoint(rwprob1.Psst, rwprob1.exprt,\
-                      rwprob1.Phi, rwprob1.dsb,\
-                      rwprob1.Gamma, 1.)
-    print(thstar3)
-    
-    runseed = 0
-    rwprob1.initTrajectory(runseed)
-    for t in range(T):
-      probstep  = rwprob1.step()
-      s                 = probstep['s']
-      a                 = probstep['act']
-      probstep['l']     = config['lambda']
-      probstep['lnext'] = config['lambda']
-      probstep['rho']   = rwprob1.getRho(s,a)
-      alg.step(probstep)
-    print("Tabular: "+ str(alg.th))
-    assert((abs(thstar3-alg.th)<0.3).all())
-
   def testEtdOnSimpleTwoStateFuncApprox(self):
     lmbda   = 0.
     config  = \
     {
+      'offpolicy' : True,
       'nf'        : 1,
       'ftype'     : None,
       'Rstd'      : 0.0,
@@ -135,9 +100,9 @@ class Test(unittest.TestCase):
       'Gamma'     : 0.9*np.eye(2),
       'mdpseed'   : 1000,
       'lambda'    : lmbda,
-      'alpha'     : 0.0001,
+      'alpha'     : 0.01,
     }
-    T         = 10000
+    T         = 1000
     nruns     = 1
     rwprob1      = SimpleTwoState(config)
     rwprob1.Phi  = np.array([[1], [1]])
@@ -184,7 +149,7 @@ class Test(unittest.TestCase):
       ths[runseed]  = alg.th
       meanth        = np.mean(ths, 0)
     print("FuncApprox: "+ str(meanth))
-    assert((abs(thstar2-meanth)<0.1).all())
+    assert((abs(thstar2-meanth)<0.15).all())
                        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
