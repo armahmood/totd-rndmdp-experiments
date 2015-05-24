@@ -27,7 +27,7 @@ class StdRandomWalk(object):
     self.ftype    = params['ftype']
     self.ns       = params['ns']
     self.inits    = params['inits']
-    self.mright   = params['mright']  # prob of going right under behavior policy
+    self.mright   = params['mright']  # rwprob1 of going right under behavior policy
     if self.ftype=='normal' or self.ftype=='nnormal':        
       self.rdprob = random.Random(params['randseed'])
     self.nf       = params['nf']
@@ -221,27 +221,27 @@ class PerformanceMeasure(object):
   of an estimate on the standard random walk problem
   '''
   
-  def __init__(self, params, prob):
-    self.Phi            = prob.getPhi(params['ftype'], params['ns'])
-    self.thstarMSE, self.VTrue  = prob.getthstarVTrue(params['ftype'], params['ns'], 
+  def __init__(self, params, rwprob1):
+    self.Phi            = rwprob1.getPhi(params['ftype'], params['ns'])
+    self.thstarMSE, self.VTrue  = rwprob1.getthstarVTrue(params['ftype'], params['ns'], 
                                                params['gamma'], 1, 
                                                params['inits'], params['mright'], 
                                                params['pright'])
-    self.thstarMSPBE, self.VTrue  = prob.getthstarVTrue(params['ftype'], params['ns'], 
+    self.thstarMSPBE, self.VTrue  = rwprob1.getthstarVTrue(params['ftype'], params['ns'], 
                                                params['gamma'], params['lambda'], 
                                                params['inits'], params['mright'], 
                                                params['pright'])
     self.VTrueProj      = np.dot(self.Phi, np.squeeze(np.array(self.thstarMSE)))
-    self.Psa            = prob.getPsa(params['ns'])
-    self.initstateprob  = prob.getinitstateprob(
+    self.Psa            = rwprob1.getPsa(params['ns'])
+    self.initstateprob  = rwprob1.getinitstateprob(
                                                 params['ns'], 
                                                 params['inits'])
-    self.mpol           = prob.getpol(params['ns'], 
+    self.mpol           = rwprob1.getpol(params['ns'], 
                                      params['mright'])
-    self.ppol           = prob.getpol(params['ns'], 
+    self.ppol           = rwprob1.getpol(params['ns'], 
                                      params['pright'])
-    self.Pm             = prob.getP(params['ns'], self.mpol, self.Psa)
-    self.Dm             = prob.getD(params['ns'], self.Pm, self.initstateprob)
+    self.Pm             = rwprob1.getP(params['ns'], self.mpol, self.Psa)
+    self.Dm             = rwprob1.getD(params['ns'], self.Pm, self.initstateprob)
     self.MSPVE            = np.zeros(params['N'])
 
   def calcMse(self, alg, ep):
@@ -253,6 +253,10 @@ class StdRandomWalk2(MDP): # same problem implemented through MDP class
     self.behavRight   = params['behavRight']
     self.targtRight   = params['targtRight']
     MDP.__init__(self,params)
+
+  def initTrajectory(self, runseed):
+    self.rdrun    = random.Random(runseed)
+    self.s  = (self.ns-1)/2
 
   def getPhi(self, ftype, ns, nf=None, rndobj=None):
     nzG              = np.diag(self.Gamma)!=0.0
@@ -293,20 +297,6 @@ class StdRandomWalk2(MDP): # same problem implemented through MDP class
       Phi[~nzG,:]       = 0.0
     return Phi    
 
-  @staticmethod
-  def getFixedPoint(Pss, ExpR, Phi, ds, Gamma, Lmbda):
-    D = np.diag(ds)
-    nzG                 = np.diag(Gamma)!=0.0
-    ns                  = np.sum(nzG) 
-    if np.isscalar(Lmbda): Lmbda = np.diag(np.ones(ns)*Lmbda)
-    ImPGLinv = pl.inv(np.eye(ns)- np.dot(Pss[np.ix_(nzG,nzG)], np.dot(Gamma[np.ix_(nzG,nzG)], Lmbda)))
-    PhiTD = np.dot(Phi[nzG,:].T, D[np.ix_(nzG,nzG)])
-    ImPG = np.eye(ns) - np.dot(Pss[np.ix_(nzG,nzG)], Gamma[np.ix_(nzG,nzG)])
-    A = np.dot(np.dot(PhiTD, ImPGLinv), np.dot(ImPG, Phi[nzG,:]))
-    b = np.dot(PhiTD, np.dot(ImPGLinv, ExpR[nzG]))
-    thstar = np.dot(pl.inv(A), b)
-    return thstar
-
   def getPssa(self):
     Pssa = np.zeros((self.ns, self.ns, 2));
     Pssa[0,0,0] = Pssa[0,0,1] = Pssa[self.ns-1,self.ns-1,0] \
@@ -332,3 +322,29 @@ class StdRandomWalk2(MDP): # same problem implemented through MDP class
     pol[0:self.ns,1] = self.targtRight
     return pol
   
+  def getNextState(self, Pssa, s, a, rndobj):
+    nzG              = np.diag(self.Gamma)!=0.0
+    return s + a*2-1 if nzG[s] else (self.ns-1)/2
+
+  def getAction(self, pol, s, rndobj):
+    nzG              = np.diag(self.Gamma)!=0.0
+    if nzG[s]:
+      rnd     = rndobj.uniform(0, 1)
+      return 0 if rnd < 1-self.behavRight else +1 
+    else:
+      return 0
+      
+  @staticmethod
+  def getFixedPoint(Pss, ExpR, Phi, ds, Gamma, Lmbda):
+    D = np.diag(ds)
+    nzG                 = np.diag(Gamma)!=0.0
+    ns                  = np.sum(nzG) 
+    if np.isscalar(Lmbda): Lmbda = np.diag(np.ones(ns)*Lmbda)
+    ImPGLinv = pl.inv(np.eye(ns)- np.dot(Pss[np.ix_(nzG,nzG)], np.dot(Gamma[np.ix_(nzG,nzG)], Lmbda)))
+    PhiTD = np.dot(Phi[nzG,:].T, D[np.ix_(nzG,nzG)])
+    ImPG = np.eye(ns) - np.dot(Pss[np.ix_(nzG,nzG)], Gamma[np.ix_(nzG,nzG)])
+    A = np.dot(np.dot(PhiTD, ImPGLinv), np.dot(ImPG, Phi[nzG,:]))
+    b = np.dot(PhiTD, np.dot(ImPGLinv, ExpR[nzG]))
+    thstar = np.dot(pl.inv(A), b)
+    return thstar
+

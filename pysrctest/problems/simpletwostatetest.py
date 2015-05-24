@@ -23,27 +23,27 @@ class Test(unittest.TestCase):
       'mdpseed'   : 1000,
       'offpolicy' : True
     }
-    prob    = SimpleTwoState(config)
+    rwprob1    = SimpleTwoState(config)
     
     ''' Test fixed points '''
     
     # behavior on-policy fixed point
-    thstar1 = mdp.MDP.getFixedPoint(prob.Pssb, prob.exprb,\
-                      prob.Phi, prob.dsb, prob.Gamma, 1.)
+    thstar1 = mdp.MDP.getFixedPoint(rwprob1.Pssb, rwprob1.exprb,\
+                      rwprob1.Phi, rwprob1.dsb, rwprob1.Gamma, 1.)
     print(thstar1)
     assert((abs(thstar1-np.array([-0.5, 0.5]))<10**-10).all())
     
     # target on-policy fixed point
-    thstar2 = mdp.MDP.getFixedPoint(prob.Psst, prob.exprt,\
-                      prob.Phi, mdp.steadystateprob(prob.Psst),\
-                      prob.Gamma, 1.)
+    thstar2 = mdp.MDP.getFixedPoint(rwprob1.Psst, rwprob1.exprt,\
+                      rwprob1.Phi, mdp.steadystateprob(rwprob1.Psst),\
+                      rwprob1.Gamma, 1.)
     print(thstar2)
     assert((abs(thstar2-np.array([7.1, 8.1]))<10**-10).all())
 
     # off-policy fixed point
-    thstar3 = mdp.MDP.getFixedPoint(prob.Psst, prob.exprt,\
-                      prob.Phi, prob.dsb,\
-                      prob.Gamma, 1.)
+    thstar3 = mdp.MDP.getFixedPoint(rwprob1.Psst, rwprob1.exprt,\
+                      rwprob1.Phi, rwprob1.dsb,\
+                      rwprob1.Gamma, 1.)
     print(thstar3)
     assert((abs(thstar2-thstar3)<10**-10).all())
             
@@ -58,28 +58,28 @@ class Test(unittest.TestCase):
       'mdpseed'   : 1000,
       'offpolicy' : True
     }
-    prob    = SimpleTwoState(config)
-    prob.Phi = np.array([[1], [1]])
+    rwprob1    = SimpleTwoState(config)
+    rwprob1.Phi = np.array([[1], [1]])
     
     ''' Test fixed points '''
     
     # behavior on-policy fixed point
-    thstar1 = mdp.MDP.getFixedPoint(prob.Pssb, prob.exprb,\
-                      prob.Phi, prob.dsb, prob.Gamma, 1.)
+    thstar1 = mdp.MDP.getFixedPoint(rwprob1.Pssb, rwprob1.exprb,\
+                      rwprob1.Phi, rwprob1.dsb, rwprob1.Gamma, 1.)
     print thstar1
     assert((abs(thstar1-np.array([0.0]))<10**-10).all())    
     
     # target on-policy fixed point
-    thstar2 = mdp.MDP.getFixedPoint(prob.Psst, prob.exprt,\
-                      prob.Phi, mdp.steadystateprob(prob.Psst),\
-                      prob.Gamma, 1.)
+    thstar2 = mdp.MDP.getFixedPoint(rwprob1.Psst, rwprob1.exprt,\
+                      rwprob1.Phi, mdp.steadystateprob(rwprob1.Psst),\
+                      rwprob1.Gamma, 1.)
     print thstar2
     assert((abs(thstar2-np.array([8.0]))<10**-10).all())    
 
     # off-policy fixed point
-    thstar3 = mdp.MDP.getFixedPoint(prob.Psst, prob.exprt,\
-                      prob.Phi, prob.dsb,\
-                      prob.Gamma, 1.)
+    thstar3 = mdp.MDP.getFixedPoint(rwprob1.Psst, rwprob1.exprt,\
+                      rwprob1.Phi, rwprob1.dsb,\
+                      rwprob1.Gamma, 1.)
     print thstar3
     assert((abs(thstar3-np.array([7.6]))<10**-10).all())    
 
@@ -116,14 +116,14 @@ class Test(unittest.TestCase):
   def getEmpiricalSteadyState(config):
     runseed = 0
     T       = 10000
-    prob    = SimpleTwoState(config)
-    prob.initTrajectory(runseed)
+    rwprob1    = SimpleTwoState(config)
+    rwprob1.initTrajectory(runseed)
     eds = np.zeros(2)
     for t in range(T):
-      eds[prob.s]  += 1.
-      prob.step()
+      eds[rwprob1.s]  += 1.
+      rwprob1.step()
     eds = eds/(np.sum(eds))
-    return [eds, prob.dsb]
+    return [eds, rwprob1.dsb]
   
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

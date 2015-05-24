@@ -28,17 +28,17 @@ class Test(unittest.TestCase):
       'mdpseed'   : 1000,
     }
     T       = 10000
-    prob    = RandomMDP(config)
+    rwprob1    = RandomMDP(config)
     runseed = 0
-    prob.initTrajectory(runseed)
+    rwprob1.initTrajectory(runseed)
     eds = np.zeros(config['ns'])
     for t in range(T):
-      eds[prob.s]  += 1.
-      prob.step()
+      eds[rwprob1.s]  += 1.
+      rwprob1.step()
     eds = eds/(np.sum(eds))
     print(eds)
-    print(prob.dsb)
-    assert((abs(eds-prob.dsb)<0.05).all())
+    print(rwprob1.dsb)
+    assert((abs(eds-rwprob1.dsb)<0.05).all())
         
 
 

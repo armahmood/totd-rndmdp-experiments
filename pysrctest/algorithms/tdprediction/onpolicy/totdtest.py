@@ -99,26 +99,26 @@ class Test(unittest.TestCase):
       'alpha'     : 0.005,
     }
     T         = 10000
-    prob      = SimpleTwoState(config)
-    prob.Phi  = np.array([[1], [1]])
+    rwprob1      = SimpleTwoState(config)
+    rwprob1.Phi  = np.array([[1], [1]])
     alg       = TOTD(config)
     ''' Test fixed points '''
     
     # off-policy fixed point
-    thstar3 = mdp.MDP.getFixedPoint(prob.Psst, prob.exprt,\
-                      prob.Phi, prob.dsb,\
-                      prob.Gamma, config['lambda'])
+    thstar3 = mdp.MDP.getFixedPoint(rwprob1.Psst, rwprob1.exprt,\
+                      rwprob1.Phi, rwprob1.dsb,\
+                      rwprob1.Gamma, config['lambda'])
     print(thstar3)
     
     runseed = 0
-    prob.initTrajectory(runseed)
+    rwprob1.initTrajectory(runseed)
     for t in range(T):
-      probstep  = prob.step()
+      probstep  = rwprob1.step()
       s                 = probstep['s']
       a                 = probstep['act']
       probstep['l']     = config['lambda']
       probstep['lnext'] = config['lambda']
-      probstep['rho']   = prob.getRho(s,a)
+      probstep['rho']   = rwprob1.getRho(s,a)
       alg.step(probstep)
     print(alg.th)
     assert((abs(thstar3-alg.th)<0.06).all())

@@ -22,13 +22,11 @@ class Test(unittest.TestCase):
     gm[0] = gm[ns - 1] = 0
     Gamma = np.diag(gm)
     nzG              = np.diag(Gamma)!=0.0
-    initdist = np.zeros(ns)
-    initdist[(ns - 1) / 2] = 1.
     config = {
               'offpolicy' : True,
               'mdpseed'   : 1000,
               'Gamma'     : Gamma,
-              'initsdist' : initdist,
+              'initsdist' : 'statemiddle',
               'Rstd'      : 0.0,
               'T'         : 200,
               'N'      : 200,
@@ -59,13 +57,11 @@ class Test(unittest.TestCase):
     gm[0] = gm[ns - 1] = 0
     Gamma = np.diag(gm)
     nzG              = np.diag(Gamma)!=0.0
-    initdist = np.zeros(ns)
-    initdist[(ns - 1) / 2] = 1.
     config = {
               'offpolicy' : True,
               'mdpseed'   : 1000,
               'Gamma'     : Gamma,
-              'initsdist' : initdist,
+              'initsdist' : 'statemiddle',
               'Rstd'      : 0.0,
               'T'         : 200,
               'N'      : 200,
@@ -96,13 +92,11 @@ class Test(unittest.TestCase):
     gm[0] = gm[ns - 1] = 0
     Gamma = np.diag(gm)
     nzG              = np.diag(Gamma)!=0.0
-    initdist = np.zeros(ns)
-    initdist[(ns - 1) / 2] = 1.
     config = {
               'offpolicy' : True,
               'mdpseed'   : 1000,
               'Gamma'     : Gamma,
-              'initsdist' : initdist,
+              'initsdist' : 'statemiddle',
               'Rstd'      : 0.0,
               'T'         : 500,
               'N'      : 500,
@@ -139,26 +133,26 @@ class Test(unittest.TestCase):
       'initd'     : 0.0
     }
     T         = 5000
-    prob      = SimpleTwoState(config)
-    prob.Phi  = np.array([[1], [1]])
+    rwprob1      = SimpleTwoState(config)
+    rwprob1.Phi  = np.array([[1], [1]])
     alg       = WTD(config)
     ''' Test fixed points '''
     
     # off-policy fixed point
-    thstar3 = mdp.MDP.getFixedPoint(prob.Psst, prob.exprt,\
-                      prob.Phi, prob.dsb,\
-                      prob.Gamma, config['lmbda'])
+    thstar3 = mdp.MDP.getFixedPoint(rwprob1.Psst, rwprob1.exprt,\
+                      rwprob1.Phi, rwprob1.dsb,\
+                      rwprob1.Gamma, config['lmbda'])
     print(thstar3)
     
     runseed = 0
-    prob.initTrajectory(runseed)
+    rwprob1.initTrajectory(runseed)
     for t in range(T):
-      probstep  = prob.step()
+      probstep  = rwprob1.step()
       s                 = probstep['s']
       a                 = probstep['act']
       probstep['l']     = config['lmbda']
       probstep['lnext'] = config['lmbda']
-      probstep['rho']   = prob.getRho(s,a)
+      probstep['rho']   = rwprob1.getRho(s,a)
       alg.step(probstep)
     print(alg.th)
     assert((abs(thstar3-alg.th)<0.06).all())

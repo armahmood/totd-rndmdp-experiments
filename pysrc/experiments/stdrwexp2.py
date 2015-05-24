@@ -25,18 +25,18 @@ from pysrc.algorithms.tdprediction.offpolicy import wgtd
 from pysrc.algorithms.tdprediction.offpolicy import wtogtd
 import cPickle as pickle
 
-def runoneconfig(config, prob, alg, perf):
-  prob.initTrajectory(config['runseed'])
+def runoneconfig(config, rwprob1, alg, perf):
+  rwprob1.initTrajectory(config['runseed'])
   ep = 0
   while ep < config['N']:
-    probstep          = prob.step()
+    probstep          = rwprob1.step()
     s                 = probstep['s']
     a                 = probstep['act']
     probstep['l']     = config['lmbda']
     probstep['lnext'] = config['lmbda']
-    probstep['rho']   = prob.getRho(s,a)
+    probstep['rho']   = rwprob1.getRho(s,a)
     alg.step(probstep)
-    if prob.isTerminal():  
+    if rwprob1.isTerminal():  
       perf.calcMSPVE(alg, ep)
       ep += 1
       

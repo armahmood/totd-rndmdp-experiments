@@ -19,8 +19,6 @@ class Test(unittest.TestCase):
     gm[0] = gm[ns - 1] = 0
     Gamma = np.diag(gm)
     nzG              = np.diag(Gamma)!=0.0
-    initdist = np.zeros(ns)
-    initdist[(ns - 1) / 2] = 1.
     config = {
               'ftype'     : 'tabular',
               'ns'        : ns,
@@ -30,7 +28,7 @@ class Test(unittest.TestCase):
               'runseed'   : 1,
               'nf'        : np.sum(nzG),
               'Gamma'     : Gamma,
-              'initsdist' : initdist,
+              'initsdist' : 'statemiddle',
               'Rstd'      : 0.0,
               'mdpseed'   : 1000
               }
@@ -58,13 +56,11 @@ class Test(unittest.TestCase):
     gm[0] = gm[ns - 1] = 0
     Gamma = np.diag(gm)
     nzG              = np.diag(Gamma)!=0.0
-    initdist = np.zeros(ns)
-    initdist[(ns - 1) / 2] = 1.
     config2 = {
               'offpolicy' : True,
               'mdpseed'   : 1000,
               'Gamma'     : Gamma,
-              'initsdist' : initdist,
+              'initsdist' : 'statemiddle',
               'Rstd'      : 0.0,
               'T'         : 200,
               'N'         : 200,
@@ -96,13 +92,11 @@ class Test(unittest.TestCase):
     gm[0] = gm[ns - 1] = 0
     Gamma = np.diag(gm)
     nzG              = np.diag(Gamma)!=0.0
-    initdist = np.zeros(ns)
-    initdist[(ns - 1) / 2] = 1.
     config2 = {
               'offpolicy' : True,
               'mdpseed'   : 1000,
               'Gamma'     : Gamma,
-              'initsdist' : initdist,
+              'initsdist' : 'statemiddle',
               'Rstd'      : 0.0,
               'T'         : 200,
               'N'         : 200,

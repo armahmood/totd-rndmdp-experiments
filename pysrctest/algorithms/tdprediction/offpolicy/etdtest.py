@@ -101,25 +101,25 @@ class Test(unittest.TestCase):
       'alpha'     : 0.0003,
     }
     T       = 60000
-    prob    = SimpleTwoState(config)
+    rwprob1    = SimpleTwoState(config)
     alg     = ETD(config)
     ''' Test fixed points '''
     
     # off-policy fixed point
-    thstar3 = mdp.MDP.getFixedPoint(prob.Psst, prob.exprt,\
-                      prob.Phi, prob.dsb,\
-                      prob.Gamma, 1.)
+    thstar3 = mdp.MDP.getFixedPoint(rwprob1.Psst, rwprob1.exprt,\
+                      rwprob1.Phi, rwprob1.dsb,\
+                      rwprob1.Gamma, 1.)
     print(thstar3)
     
     runseed = 0
-    prob.initTrajectory(runseed)
+    rwprob1.initTrajectory(runseed)
     for t in range(T):
-      probstep  = prob.step()
+      probstep  = rwprob1.step()
       s                 = probstep['s']
       a                 = probstep['act']
       probstep['l']     = config['lambda']
       probstep['lnext'] = config['lambda']
-      probstep['rho']   = prob.getRho(s,a)
+      probstep['rho']   = rwprob1.getRho(s,a)
       alg.step(probstep)
     print("Tabular: "+ str(alg.th))
     assert((abs(thstar3-alg.th)<0.3).all())
@@ -139,47 +139,47 @@ class Test(unittest.TestCase):
     }
     T         = 10000
     nruns     = 1
-    prob      = SimpleTwoState(config)
-    prob.Phi  = np.array([[1], [1]])
+    rwprob1      = SimpleTwoState(config)
+    rwprob1.Phi  = np.array([[1], [1]])
     alg       = ETD(config)
     ''' Test fixed points '''
     
     # target on-policy fixed point
-    thstar0 = mdp.MDP.getFixedPoint(prob.Psst, prob.exprt,\
-                      prob.Phi, mdp.steadystateprob(prob.Psst),\
-                      prob.Gamma, lmbda)
-    print(mdp.steadystateprob(prob.Psst))
+    thstar0 = mdp.MDP.getFixedPoint(rwprob1.Psst, rwprob1.exprt,\
+                      rwprob1.Phi, mdp.steadystateprob(rwprob1.Psst),\
+                      rwprob1.Gamma, lmbda)
+    print(mdp.steadystateprob(rwprob1.Psst))
     print thstar0
 
     # off-policy fixed point
-    thstar1 = mdp.MDP.getFixedPoint(prob.Psst, prob.exprt,\
-                      prob.Phi, prob.dsb,\
-                      prob.Gamma, lmbda)
-    print(prob.dsb)
+    thstar1 = mdp.MDP.getFixedPoint(rwprob1.Psst, rwprob1.exprt,\
+                      rwprob1.Phi, rwprob1.dsb,\
+                      rwprob1.Gamma, lmbda)
+    print(rwprob1.dsb)
     print(thstar1)
     
     # emphatic fixed point
-    ImPG    = np.eye(prob.ns) - np.dot(prob.Psst, prob.Gamma)
-    ImPLG   = np.eye(prob.ns) - np.dot(lmbda*prob.Psst, prob.Gamma)
+    ImPG    = np.eye(rwprob1.ns) - np.dot(rwprob1.Psst, rwprob1.Gamma)
+    ImPLG   = np.eye(rwprob1.ns) - np.dot(lmbda*rwprob1.Psst, rwprob1.Gamma)
     ImPL    = np.dot( pl.inv(ImPLG), ImPG )
-    m       = np.dot(prob.dsb.T, pl.inv(ImPL))
+    m       = np.dot(rwprob1.dsb.T, pl.inv(ImPL))
     m       = m/np.sum(m)
-    thstar2 = mdp.MDP.getFixedPoint(prob.Psst, prob.exprt,\
-                      prob.Phi, m,\
-                      prob.Gamma, lmbda)
+    thstar2 = mdp.MDP.getFixedPoint(rwprob1.Psst, rwprob1.exprt,\
+                      rwprob1.Phi, m,\
+                      rwprob1.Gamma, lmbda)
     print(m)
     print(thstar2)
     
     ths   = np.zeros((nruns, config['nf']))
     for runseed in range(nruns): 
-      prob.initTrajectory(runseed)
+      rwprob1.initTrajectory(runseed)
       for t in range(T):
-        probstep  = prob.step()
+        probstep  = rwprob1.step()
         s                 = probstep['s']
         a                 = probstep['act']
         probstep['l']     = config['lambda']
         probstep['lnext'] = config['lambda']
-        probstep['rho']   = prob.getRho(s,a)
+        probstep['rho']   = rwprob1.getRho(s,a)
         alg.step(probstep)
       ths[runseed]  = alg.th
       meanth        = np.mean(ths, 0)

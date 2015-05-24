@@ -31,6 +31,14 @@ class MDP(object):
     self.Gamma      = params['Gamma'] # diagonal matrix of state-dependent gammas
     self.mdpseed    = params['mdpseed'] # seed to generate mdps
     self.rdmdp      = np.random.RandomState(self.mdpseed)
+
+    if type(self.initsdist)==str: 
+      self.initsdistname = self.initsdist
+      if self.initsdistname=='statemiddle':
+        self.initsdist= np.zeros(self.ns)
+        self.initsdist[(self.ns-1)/2] = 1.
+    else:
+      self.initsdistname = None
     
     self.Pssa       = self.getPssa()
     self.Rssa       = self.getRssa()
@@ -63,16 +71,18 @@ class MDP(object):
 
   def initTrajectory(self, runseed):
     self.rdrun    = np.random.RandomState(runseed)
-    if self.initsdist=='statezero':
+    if self.initsdistname=='statezero':
       self.s  = 0
+    elif self.initsdistname=='statemiddle':
+      self.s  = (self.ns-1)/2
     else:
       self.s  = sampleFrom(self.initsdist, self.rdrun)
 
   def step(self):
-    a = 0 if self.na==1 else getAction(self.bpol, self.s, self.rdrun)
-    snext   = getNextState(self.Pssa, self.s, a, self.rdrun)
+    a = 0 if self.na==1 else self.getAction(self.bpol, self.s, self.rdrun)
+    snext   = self.getNextState(self.Pssa, self.s, a, self.rdrun)
     noise   = self.rdmdp.normal(0, self.Rstd) if self.Rstd>0 else 0.
-    R       = getReward(self.Rssa, self.s, snext, a) + noise
+    R       = self.getReward(self.Rssa, self.s, snext, a) + noise
     phi     = self.Phi[self.s]
     phinext = self.Phi[snext]
     g       = self.Gamma[self.s, self.s]
@@ -109,6 +119,17 @@ class MDP(object):
         a = sum(Phi[i,]*Phi[i,])
         Phi[i,] = Phi[i,]/np.sqrt(a)
     return Phi    
+
+  def getAction(self, pol, s, rndobj):
+    rndnum = rndobj.uniform(0, 1)
+    return mpl.mlab.find(rndnum<np.cumsum(pol[s,:]))[0]
+  
+  def getNextState(self, Pssa, s, a, rndobj):
+    rndnum = rndobj.uniform(0, 1)
+    return mpl.mlab.find(rndnum<np.cumsum(Pssa[s,:,a]))[0]
+  
+  def getReward(self, Rssa, s, snext, a):
+    return Rssa[s,snext,a]
 
   @staticmethod
   def getFixedPoint(Pss, ExpR, Phi, ds, Gamma, Lmbda):
@@ -194,18 +215,6 @@ def getSkewedPolicy1(ns, na, rndobj):
     if na>1: pol[i,:] = 0.01/(na-1)
     pol[i, a] = 0.99
   return pol
-
-def getAction(pol, s, rndobj):
-  rndnum = rndobj.uniform(0, 1)
-  return mpl.mlab.find(rndnum<np.cumsum(pol[s,:]))[0]
-
-def getNextState(Pssa, s, a, rndobj):
-  rndnum = rndobj.uniform(0, 1)
-  return mpl.mlab.find(rndnum<np.cumsum(Pssa[s,:,a]))[0]
-
-def getReward(Rssa, s, snext, a):
-  
-  return Rssa[s,snext,a]
     
 def sampleFrom(dist, rndobj):
   rndnum = rndobj.uniform(0, 1)
@@ -224,20 +233,20 @@ class PerformanceMeasure(object):
   Only for on-policy case at this point.
   '''
   
-  def __init__(self, params, prob):
+  def __init__(self, params, rwprob1):
     self.T            = params['T'] # number of total steps
     self.N            = params['N'] # number of data points to store
-    self.Phi          = prob.Phi
+    self.Phi          = rwprob1.Phi
     if 'offpolicy' in params and params['offpolicy']==True:
-      Pss             = prob.Psst
-      expr            = prob.exprt
+      Pss             = rwprob1.Psst
+      expr            = rwprob1.exprt
     else:
-      Pss             = prob.Pssb
-      expr            = prob.exprb      
-    self.thstar       = prob.getFixedPoint(Pss, expr, prob.Phi, prob.dsb, prob.Gamma, 1.)
-    self.thstarMSPBE  = prob.getFixedPoint(Pss, expr, prob.Phi, prob.dsb, prob.Gamma, params['lmbda'])
-    self.VTrueProj    = np.dot(prob.Phi, self.thstar)
-    self.D            = np.diag(prob.dsb)
+      Pss             = rwprob1.Pssb
+      expr            = rwprob1.exprb      
+    self.thstar       = rwprob1.getFixedPoint(Pss, expr, rwprob1.Phi, rwprob1.dsb, rwprob1.Gamma, 1.)
+    self.thstarMSPBE  = rwprob1.getFixedPoint(Pss, expr, rwprob1.Phi, rwprob1.dsb, rwprob1.Gamma, params['lmbda'])
+    self.VTrueProj    = np.dot(rwprob1.Phi, self.thstar)
+    self.D            = np.diag(rwprob1.dsb)
     self.normFactor   = np.dot(self.VTrueProj, np.dot(self.D, self.VTrueProj))
     self.MSPVE          = np.zeros(self.N)
     
