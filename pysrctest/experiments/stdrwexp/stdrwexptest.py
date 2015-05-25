@@ -18,6 +18,8 @@ class Test(unittest.TestCase):
     stdrwexp.main()
     sys.argv = ["", "1", "StdRWFreqReward", dirpath]
     stdrwexp.main()
+    sys.argv = ["", "1", "StdRWFreqPosNegReward", dirpath]
+    stdrwexp.main()
 
 if __name__ == "__main__":
   #import sys;sys.argv = ['', 'Test.testStdRandomWalkExp']

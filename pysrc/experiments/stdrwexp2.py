@@ -15,6 +15,7 @@ import argparse
 from pysrc.problems.mdp import PerformanceMeasure
 from pysrc.problems.stdrwsparsereward import StdRWSparseReward2
 from pysrc.problems.stdrwfreqreward import StdRWFreqReward2
+from pysrc.problems.stdrwfreqposnegreward import StdRWFreqPosNegReward2
 from pysrc.algorithms.tdprediction.offpolicy import oislstd
 from pysrc.algorithms.tdprediction.offpolicy import olstd2
 from pysrc.algorithms.tdprediction.offpolicy import wislstd
@@ -67,8 +68,9 @@ def main():
            'wtogtd':wtogtd.WTOGTD,         
            }
   probs = {
-           'StdRWSparseReward2'  : StdRWSparseReward2,
-           'StdRWFreqReward2'    : StdRWFreqReward2,
+           'StdRWSparseReward2'    : StdRWSparseReward2,
+           'StdRWFreqReward2'      : StdRWFreqReward2,
+           'StdRWFreqPosNegReward2': StdRWFreqPosNegReward2
            }
   algname   = configs[0]['algname']
   rwprob   = probs[args.probname](configs[0])
