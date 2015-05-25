@@ -19,7 +19,7 @@ def plotonealg(algname, params):
     path = "../."+path
   pathfileprefix      = path+"run_"
   if not os.path.isfile(pathfileprefix+"perfvslambda.plot"):
-    sys.argv  = ["", "30", pathfileprefix]
+    sys.argv  = ["", "50", pathfileprefix]
     sys.argv.extend(params)
     plotdataprocess.main()
   oisdata   = pickle.load(file(pathfileprefix+"perfvslambda.plot"))
