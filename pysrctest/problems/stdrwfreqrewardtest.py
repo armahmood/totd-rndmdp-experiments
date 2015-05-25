@@ -29,7 +29,7 @@ class Test(unittest.TestCase):
     rwprob      = StdRWFreqReward(config)
     probvisit   = np.zeros(ns)
     rwprob.setrunseed(config['runseed'])
-    for ep in range(2000):
+    for ep in range(500):
       rwprob.initepisode()
       while not rwprob.isterminal():
         rets                = rwprob.step()

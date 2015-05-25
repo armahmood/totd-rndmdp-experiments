@@ -5,7 +5,7 @@ Created on Mar 25, 2015
 '''
 import unittest
 import numpy as np
-from pysrc.problems.stdrwfreqreward import StdRWFreqReward2
+from pysrc.problems.stdrwfreqposnegreward import StdRWFreqPosNegReward2
 
 class Test(unittest.TestCase):
 
@@ -30,14 +30,14 @@ class Test(unittest.TestCase):
               'mdpseed'   : 1000
               }
     
-    rwprob      = StdRWFreqReward2(config)
+    rwprob      = StdRWFreqPosNegReward2(config)
     probvisit   = np.zeros(ns)
     rwprob.initTrajectory(config['runseed'])
     ep = 0
     while ep < 500:
       rets                = rwprob.step()
       assert(rets['g']==0.0 or 
-             (rets['act']==0 and rets['R']==0.0)\
+             (rets['act']==0 and rets['R']==-1.0)\
              or (rets['act']==1 and rets['R']==1.0))
       probvisit[rets['s']]  += 1
       if rwprob.isTerminal(): ep += 1
