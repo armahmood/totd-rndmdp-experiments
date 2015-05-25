@@ -333,7 +333,14 @@ class StdRandomWalk2(MDP): # same problem implemented through MDP class
       return 0 if rnd < 1-self.behavRight else +1 
     else:
       return 0
-      
+
+  def steadystateprob(self, Pss):
+    ds          = MDP.steadystateprob(self, Pss)
+    zG          = np.diag(self.Gamma)==0.0
+    ds[zG]      = 0.0
+    ds          = ds / np.sum(ds)
+    return ds
+    
   @staticmethod
   def getFixedPoint(Pss, ExpR, Phi, ds, Gamma, Lmbda):
     D = np.diag(ds)

@@ -35,7 +35,7 @@ class Test(unittest.TestCase):
     
     # target on-policy fixed point
     thstar2 = mdp.MDP.getFixedPoint(rwprob1.Psst, rwprob1.exprt,\
-                      rwprob1.Phi, mdp.steadystateprob(rwprob1.Psst),\
+                      rwprob1.Phi, rwprob1.steadystateprob(rwprob1.Psst),\
                       rwprob1.Gamma, 1.)
     print(thstar2)
     assert((abs(thstar2-np.array([7.1, 8.1]))<10**-10).all())
@@ -71,7 +71,7 @@ class Test(unittest.TestCase):
     
     # target on-policy fixed point
     thstar2 = mdp.MDP.getFixedPoint(rwprob1.Psst, rwprob1.exprt,\
-                      rwprob1.Phi, mdp.steadystateprob(rwprob1.Psst),\
+                      rwprob1.Phi, rwprob1.steadystateprob(rwprob1.Psst),\
                       rwprob1.Gamma, 1.)
     print thstar2
     assert((abs(thstar2-np.array([8.0]))<10**-10).all())    

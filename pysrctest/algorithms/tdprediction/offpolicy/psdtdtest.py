@@ -39,7 +39,7 @@ class Test(unittest.TestCase):
     
     # target on-policy fixed point
     thstar0 = mdp.MDP.getFixedPoint(rwprob1.Psst, rwprob1.exprt,\
-                      rwprob1.Phi, mdp.steadystateprob(rwprob1.Psst),\
+                      rwprob1.Phi, rwprob1.steadystateprob(rwprob1.Psst),\
                       rwprob1.Gamma, 1.)
     print thstar0
 

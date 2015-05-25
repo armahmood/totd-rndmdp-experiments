@@ -54,7 +54,7 @@ class MDP(object):
       (self.Psst, self.exprt) = (self.Pssb, self.exprb)
     
     self.Phi                = self.getPhi(self.ftype, self.ns, self.nf, rndobj=self.rdmdp)
-    self.dsb                = steadystateprob(self.Pssb)
+    self.dsb                = self.steadystateprob(self.Pssb)
     if self.initsdist=='steadystate': self.initsdist = self.dsb
 
   def getPssa(self, params):
@@ -143,6 +143,12 @@ class MDP(object):
     thstar = np.dot(pl.inv(A), b)
     return thstar
 
+  def steadystateprob(self, Pss):
+    (eigvals, eigvecs) = pl.eig(Pss.T)
+    eigi = np.argmax(eigvals)
+    diotas = eigvecs[:,eigi]/sum(eigvecs[:,eigi])
+    return np.real(diotas)
+
 ## general ergodic MDP, general gamma 
 ## Pssa is of s X s' X a form
 
@@ -167,12 +173,6 @@ def getPolInducedModel(Pssa, Rssa, pol):
 
     return (Pss, ExpR)
      
-def steadystateprob(Pss):
-  (eigvals, eigvecs) = pl.eig(Pss.T)
-  eigi = np.argmax(eigvals)
-  diotas = eigvecs[:,eigi]/sum(eigvecs[:,eigi])
-  return np.real(diotas)
-
 def followon(Pss, startstatedist):
   (ns, ns) = np.shape(Pss)
   return np.dot(pl.inv(np.eye(ns) - Pss.T), startstatedist)

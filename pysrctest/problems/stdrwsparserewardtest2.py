@@ -47,7 +47,7 @@ class Test(unittest.TestCase):
     probvisit /= np.sum(probvisit)
     print(probvisit)
     print(rwprob.dsb)
-    assert((np.abs(rwprob.dsb - probvisit) < 0.01).all())
+    assert((np.abs(rwprob.dsb[nzG] - probvisit[nzG]) < 0.01).all())
 
   def testgtdonsparserewardtabular(self):
     ns = 13

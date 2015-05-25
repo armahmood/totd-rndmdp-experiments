@@ -14,15 +14,13 @@ def main():
   gm[0]   = gm[ns-1] = 0
   Gamma   = np.diag(gm)
   nzG              = np.diag(Gamma)!=0.0
-  initdist= np.zeros(ns)
-  initdist[(ns-1)/2] = 1.
   configs     = [
                    {
                    'offpolicy' : True,
                    'algname'   : 'gtd',
                    'mdpseed'   : 1000,
                    'Gamma'     : Gamma,
-                   'initsdist' : initdist,
+                   'initsdist' : 'statemiddle',
                    'Rstd'      : 0.0,
                    'T'         : 100,
                    'N'         : 100,

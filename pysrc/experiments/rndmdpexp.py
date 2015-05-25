@@ -19,10 +19,10 @@ from pysrc.algorithms.tdprediction.onpolicy import td, tdr, totd
 import copy
 import pickle
 
-def runoneconfig(config, rwprob1, alg, perf):
-  rwprob1.initTrajectory(config['runseed'])
+def runoneconfig(config, rwprob, alg, perf):
+  rwprob.initTrajectory(config['runseed'])
   for t in range(config['T']):
-    probstep          = rwprob1.step()
+    probstep          = rwprob.step()
     probstep['l']     = config['lmbda']
     probstep['lnext'] = config['lmbda']
     alg.step(probstep)
