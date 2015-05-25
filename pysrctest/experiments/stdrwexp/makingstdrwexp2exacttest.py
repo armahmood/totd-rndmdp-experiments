@@ -114,7 +114,7 @@ class Test(unittest.TestCase):
     stdrwexp2.runoneconfig(config, rwprob2, alg2, perf2)
     
     for ep in range(config['N']):
-      assert((np.abs(perf1.MSPVE[ep]-perf2.MSPVE[ep])<0.1).all())
+      assert((np.abs(perf1.MSPVE[ep]-perf2.MSPVE[ep])<10**-10).all())
 
 if __name__ == "__main__":
   #import sys;sys.argv = ['', 'Test.testStdRandomWalkExp']

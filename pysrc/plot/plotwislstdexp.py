@@ -11,21 +11,21 @@ import matplotlib.pyplot as ppl
 import pickle
 
 def main():
-  path = "./results/wislstdexperiments/oislstd/"
+  path = "./results/wislstd-experiments/stdrw-sparse-reward-states/oislstd/"
   if not os.path.exists(path):
     path = "../."+path
   pathfileprefix      = path+"run_"
-  sys.argv  = ["", "10", pathfileprefix, \
+  sys.argv  = ["", "5", pathfileprefix, \
               "2", "inita", "lambda", \
               "1", "lambda"]
   plotdataprocess.main()
   oisdata   = pickle.load(file(pathfileprefix+"perfvslambda.plot"))
 
-  path = "./results/wislstdexperiments/wislstd/"
+  path = "./results/wislstd-experiments/stdrw-sparse-reward-states/wislstd/"
   if not os.path.exists(path):
     path = "../."+path
   pathfileprefix      = path+"run_"
-  sys.argv  = ["", "10", pathfileprefix, \
+  sys.argv  = ["", "5", pathfileprefix, \
               "2", "inita", "lambda", \
               "1", "lambda"]
   plotdataprocess.main()
