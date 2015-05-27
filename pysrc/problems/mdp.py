@@ -81,7 +81,7 @@ class MDP(object):
   def step(self):
     a = 0 if self.na==1 else self.getAction(self.bpol, self.s, self.rdrun)
     snext   = self.getNextState(self.Pssa, self.s, a, self.rdrun)
-    noise   = self.rdmdp.normal(0, self.Rstd) if self.Rstd>0 else 0.
+    noise   = self.rdrun.normal(0, self.Rstd) if self.Rstd>0 else 0.
     R       = self.getReward(self.Rssa, self.s, snext, a) + noise
     phi     = self.Phi[self.s]
     phinext = self.Phi[snext]

@@ -28,7 +28,6 @@ class StdRWSparseReward2(StdRandomWalk2):
   
   def __init__(self, params):
     StdRandomWalk2.__init__(self,params)
-    
   def getRssa(self):
     Rssa              = np.zeros((self.ns, self.ns, 2)); 
     Rssa[self.ns-2, self.ns-1, 1] = 1    

@@ -23,16 +23,21 @@ def runoneconfig(config, prob, alg, perf):
   prob.initTrajectory(config['runseed'])
   for t in range(config['T']):
     probstep          = prob.step()
+    s                 = probstep['s']
+    a                 = probstep['act']
     probstep['l']     = config['lmbda']
     probstep['lnext'] = config['lmbda']
+    probstep['rho']   = prob.getRho(s, a)
     alg.step(probstep)
     perf.calcMSPVE(alg, t)
 
 def main():
   parser          = argparse.ArgumentParser()
   parser.add_argument("mdpseed", help="used as a seed to generate a random MDP", type=int)
-  parser.add_argument("ftype", help="Type of feature representations: tabular/binary/normal")
+  parser.add_argument("ftype", help="type of feature representations: tabular/binary/normal")
   parser.add_argument("runseed", help="used as a seed of an independent run", type=int)
+  parser.add_argument("bpoltype", help="type of the behavior policy", type=int)
+  parser.add_argument("tpoltype", help="type of the target policy", type=int)
   parser.add_argument("path", help="location of the config file")
   args = parser.parse_args()
   configpathname  = args.path + "config.pkl"
@@ -55,7 +60,9 @@ def main():
   probconfig            = copy.copy(configs[0])
   probconfig['mdpseed'] = args.mdpseed
   probconfig['ftype']   = args.ftype
-  rwprob1                  = randommdp.RandomMDP(probconfig)
+  probconfig['bpoltype']  = args.bpoltype
+  probconfig['tpoltype']  = args.tpoltype
+  rwprob1                 = randommdp.RandomMDP(probconfig)
 
   perf      = mdp.PerformanceMeasure(probconfig, rwprob1)
   print("Running algorithm " + algname + ", runseed: " + str(args.runseed) )
