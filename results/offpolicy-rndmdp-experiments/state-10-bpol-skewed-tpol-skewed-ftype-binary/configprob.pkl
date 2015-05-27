@@ -7,12 +7,12 @@ sS'numzerogs'
 p4
 I2
 sS'N'
-I1000
+I500
 sS'Rstd'
 p5
 F0
 sS'T'
-I1000
+I500
 sS'initsdist'
 p6
 S'statezero'
@@ -22,7 +22,7 @@ p8
 g3
 sS'Gamma'
 p9
-F0.90000000000000002
+F0.98999999999999999
 sS'b'
 I3
 sS'rtype'

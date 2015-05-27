@@ -85,6 +85,8 @@ class MDP(object):
     R       = self.getReward(self.Rssa, self.s, snext, a) + noise
     phi     = self.Phi[self.s]
     phinext = self.Phi[snext]
+    if len(np.shape(self.Gamma))==1:
+      a=0
     g       = self.Gamma[self.s, self.s]
     gnext   = self.Gamma[snext, snext]
     stemp   = self.s
