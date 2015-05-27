@@ -110,10 +110,11 @@ class Test(unittest.TestCase):
     rwprob      = StdRWSparseReward2(config)
     perf      = PerformanceMeasure(config, rwprob)
     stdrwexp2.runoneconfig(config, rwprob, alg, perf)
+    thstarMSPBE = perf.getThstarMSPBE(config['lmbda'])
     print "binary"
-    print perf.thstarMSPBE.T
+    print thstarMSPBE
     print alg.th
-    assert (abs(perf.thstarMSPBE.T - alg.th) < 0.05).all()
+    assert (abs(thstarMSPBE - alg.th) < 0.05).all()
 
   def testOnSimpleTwoStateFuncApprox(self):
     config = \

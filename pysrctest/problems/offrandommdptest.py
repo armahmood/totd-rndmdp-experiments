@@ -24,7 +24,6 @@ class Test(unittest.TestCase):
                      'mdpseed'    : mdpseed,
                      'runseed'    : 1,
                      'ftype'      : 'tabular',
-                     'algname'    : 'td',
                      'Gamma'      : gamma,
                      'numzerogs'  : 1,
                      'T'          : N,
@@ -40,7 +39,7 @@ class Test(unittest.TestCase):
                      'inita'      : 1,
                      #'alpha'      : 0.1,
                      #'beta'       : 0.0,
-                     'lmbda'      : 0.9,
+                     'lmbda'      : 0.95,
                      'bpoltype'   : 'uniform',
                      'tpoltype'   : 'random'
                      }
@@ -63,7 +62,6 @@ class Test(unittest.TestCase):
                      'mdpseed'    : mdpseed,
                      'runseed'    : 1,
                      'ftype'      : 'binary',
-                     'algname'    : 'td',
                      'Gamma'      : gamma,
                      'numzerogs'  : 1,
                      'T'          : N,

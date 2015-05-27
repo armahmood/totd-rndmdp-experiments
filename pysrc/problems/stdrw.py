@@ -27,7 +27,7 @@ class StdRandomWalk(object):
     self.ftype    = params['ftype']
     self.ns       = params['ns']
     self.inits    = params['inits']
-    self.mright   = params['mright']  # rwprob1 of going right under behavior policy
+    self.mright   = params['mright']  # prob of going right under behavior policy
     if self.ftype=='normal' or self.ftype=='nnormal':        
       self.rdprob = random.Random(params['randseed'])
     self.nf       = params['nf']
@@ -221,27 +221,27 @@ class PerformanceMeasure(object):
   of an estimate on the standard random walk problem
   '''
   
-  def __init__(self, params, rwprob1):
-    self.Phi            = rwprob1.getPhi(params['ftype'], params['ns'])
-    self.thstarMSE, self.VTrue  = rwprob1.getthstarVTrue(params['ftype'], params['ns'], 
+  def __init__(self, params, prob):
+    self.Phi            = prob.getPhi(params['ftype'], params['ns'])
+    self.thstarMSE, self.VTrue  = prob.getthstarVTrue(params['ftype'], params['ns'], 
                                                params['gamma'], 1, 
                                                params['inits'], params['mright'], 
                                                params['pright'])
-    self.thstarMSPBE, self.VTrue  = rwprob1.getthstarVTrue(params['ftype'], params['ns'], 
+    self.thstarMSPBE, self.VTrue  = prob.getthstarVTrue(params['ftype'], params['ns'], 
                                                params['gamma'], params['lambda'], 
                                                params['inits'], params['mright'], 
                                                params['pright'])
     self.VTrueProj      = np.dot(self.Phi, np.squeeze(np.array(self.thstarMSE)))
-    self.Psa            = rwprob1.getPsa(params['ns'])
-    self.initstateprob  = rwprob1.getinitstateprob(
+    self.Psa            = prob.getPsa(params['ns'])
+    self.initstateprob  = prob.getinitstateprob(
                                                 params['ns'], 
                                                 params['inits'])
-    self.mpol           = rwprob1.getpol(params['ns'], 
+    self.mpol           = prob.getpol(params['ns'], 
                                      params['mright'])
-    self.ppol           = rwprob1.getpol(params['ns'], 
+    self.ppol           = prob.getpol(params['ns'], 
                                      params['pright'])
-    self.Pm             = rwprob1.getP(params['ns'], self.mpol, self.Psa)
-    self.Dm             = rwprob1.getD(params['ns'], self.Pm, self.initstateprob)
+    self.Pm             = prob.getP(params['ns'], self.mpol, self.Psa)
+    self.Dm             = prob.getD(params['ns'], self.Pm, self.initstateprob)
     self.MSPVE            = np.zeros(params['N'])
 
   def calcMse(self, alg, ep):

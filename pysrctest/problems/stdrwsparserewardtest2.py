@@ -116,10 +116,11 @@ class Test(unittest.TestCase):
     rwprob      = StdRWSparseReward2(config2)
     perf        = PerformanceMeasure(config2, rwprob)
     stdrwexp2.runoneconfig(config2, rwprob, alg, perf)
+    thstarMSPBE = perf.getThstarMSPBE(config2['lmbda'])
     print "binary"
-    print perf.thstarMSPBE.T
+    print thstarMSPBE
     print alg.th
-    assert (abs(perf.thstarMSPBE.T - alg.th) < 0.05).all()
+    assert (abs(thstarMSPBE - alg.th) < 0.05).all()
  
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

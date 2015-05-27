@@ -233,23 +233,26 @@ class PerformanceMeasure(object):
   Only for on-policy case at this point.
   '''
   
-  def __init__(self, params, rwprob1):
+  def __init__(self, params, prob):
     self.T            = params['T'] # number of total steps
     self.N            = params['N'] # number of data points to store
-    self.Phi          = rwprob1.Phi
+    self.Phi          = prob.Phi
+    self.prob         = prob
     if 'offpolicy' in params and params['offpolicy']==True:
-      Pss             = rwprob1.Psst
-      expr            = rwprob1.exprt
+      self.Pss             = prob.Psst
+      self.expr            = prob.exprt
     else:
-      Pss             = rwprob1.Pssb
-      expr            = rwprob1.exprb      
-    self.thstar       = rwprob1.getFixedPoint(Pss, expr, rwprob1.Phi, rwprob1.dsb, rwprob1.Gamma, 1.)
-    self.thstarMSPBE  = rwprob1.getFixedPoint(Pss, expr, rwprob1.Phi, rwprob1.dsb, rwprob1.Gamma, params['lmbda'])
-    self.VTrueProj    = np.dot(rwprob1.Phi, self.thstar)
-    self.D            = np.diag(rwprob1.dsb)
+      self.Pss             = prob.Pssb
+      self.expr            = prob.exprb      
+    self.thstar       = prob.getFixedPoint(self.Pss, self.expr, prob.Phi, prob.dsb, prob.Gamma, 1.)
+    self.VTrueProj    = np.dot(prob.Phi, self.thstar)
+    self.D            = np.diag(prob.dsb)
     self.normFactor   = np.dot(self.VTrueProj, np.dot(self.D, self.VTrueProj))
     self.MSPVE          = np.zeros(self.N)
-    
+
+  def getThstarMSPBE(self, Lmbda):
+    return self.prob.getFixedPoint(self.Pss, self.expr, self.Phi, self.prob.dsb, self.prob.Gamma, Lmbda)
+  
   def calcMSPVE(self, alg, t): # t is the number of the current step
     index               = t*self.N/self.T 
     msediff             = np.dot(self.Phi, alg.estimate()) - self.VTrueProj

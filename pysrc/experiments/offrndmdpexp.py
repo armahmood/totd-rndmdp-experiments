@@ -3,8 +3,8 @@ Created on Sep 30, 2014
 
 @author: A. Rupam Mahmood
 
-This module instantiates an algorithm on a random MDP problem 
-(see van Seijen, Sutton, Mahmood, Pilarski 2015, ewrl) and runs an experiment.
+This module instantiates an algorithm on an off-policy random MDP problem 
+ and runs an experiment.
 
 '''
 
@@ -14,8 +14,15 @@ sys.path.insert(0, os.getcwd())
 import argparse
 import numpy as np
 from pysrc.problems import mdp
-from pysrc.problems import randommdp
-from pysrc.algorithms.tdprediction.onpolicy import td, tdr, totd
+from pysrc.problems import offrandommdp
+from pysrc.algorithms.tdprediction.offpolicy import oislstd
+from pysrc.algorithms.tdprediction.offpolicy import olstd2
+from pysrc.algorithms.tdprediction.offpolicy import wislstd
+from pysrc.algorithms.tdprediction.offpolicy import gtd
+from pysrc.algorithms.tdprediction.offpolicy import togtd
+from pysrc.algorithms.tdprediction.offpolicy import wtd
+from pysrc.algorithms.tdprediction.offpolicy import wgtd
+from pysrc.algorithms.tdprediction.offpolicy import wtogtd
 import copy
 import pickle
 
@@ -34,44 +41,44 @@ def runoneconfig(config, prob, alg, perf):
 def main():
   parser          = argparse.ArgumentParser()
   parser.add_argument("mdpseed", help="used as a seed to generate a random MDP", type=int)
-  parser.add_argument("ftype", help="type of feature representations: tabular/binary/normal")
   parser.add_argument("runseed", help="used as a seed of an independent run", type=int)
-  parser.add_argument("bpoltype", help="type of the behavior policy", type=int)
-  parser.add_argument("tpoltype", help="type of the target policy", type=int)
   parser.add_argument("path", help="location of the config file")
+  parser.add_argument("algname", help="name of the algorithm")
   args = parser.parse_args()
-  configpathname  = args.path + "config.pkl"
-  cf              = open(configpathname, 'rb')
-  configs         = pickle.load(cf)  
+  configprobpathname  = args.path + "configprob.pkl"
+  cf              = open(configprobpathname, 'rb')
+  configprob      = pickle.load(cf)  
+
+  configalgpathname  = args.path + args.algname + "/configalg.pkl"
+  cf              = open(configalgpathname, 'rb')
+  configsalg      = pickle.load(cf)  
     
-  filepathname  = args.path   +\
-                  "mdpseed_"  + str(args.mdpseed)   + "_"\
-                  "ftype_"    + str(args.ftype) + "_"\
+  filepathname  = args.path + args.algname   +\
+                  "/mdpseed_"  + str(args.mdpseed)   + "_"\
                   "runseed_"  + str(args.runseed)   +\
                   ".dat"
   f             = open(filepathname, 'wb')
   
   algs  = {
-           'td':td.TD,
-           'tdr':tdr.TDR,
-           'totd':totd.TOTD,
+           'gtd':gtd.GTD, \
+           'togtd':togtd.TOGTD,\
+           'oislstd':oislstd.OISLSTD,\
+           'olstd2':olstd2.OLSTD2,\
+           'wislstd':wislstd.WISLSTD,\
+           'wtd':wtd.WTD, \
+           'wgtd':wgtd.WGTD, \
+           'wtogtd':wtogtd.WTOGTD,         
            }
-  algname               = configs[0]['algname']
-  probconfig            = copy.copy(configs[0])
-  probconfig['mdpseed'] = args.mdpseed
-  probconfig['ftype']   = args.ftype
-  probconfig['bpoltype']  = args.bpoltype
-  probconfig['tpoltype']  = args.tpoltype
-  rwprob1                 = randommdp.RandomMDP(probconfig)
+  configprob['mdpseed'] = args.mdpseed
+  prob                  = offrandommdp.OffRandomMDP(configprob)
 
-  perf      = mdp.PerformanceMeasure(probconfig, rwprob1)
-  print("Running algorithm " + algname + ", runseed: " + str(args.runseed) )
-  for config in configs:
-    config['ftype']       = args.ftype
-    config['nf']          = rwprob1.nf
-    alg                   = algs[algname](config)
+  perf      = mdp.PerformanceMeasure(configprob, prob)
+  print("Running algorithm " + args.algname + ", runseed: " + str(args.runseed) )
+  for config in configsalg:
+    config.update(configprob)
+    alg                   = algs[args.algname](config)
     config['runseed']     = args.runseed
-    runoneconfig(config, rwprob1, alg, perf)
+    runoneconfig(config, prob, alg, perf)
     config['error']      = perf.getNormMSPVE()
     pickle.dump(config, f, -1)
 
