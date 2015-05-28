@@ -16,8 +16,7 @@ import numpy as np
 import cPickle as pickle
 import itertools
 import sys
-import argparse
-
+import os.path
 
 def loaddata(nruns, pathfileprefix):
   data = []
@@ -105,13 +104,25 @@ def main():
     pathfileprefix   = sys.argv[2]
     nparams = int(sys.argv[3])
     params = np.array([ sys.argv[4+i] for i in range(nparams) ])
-    nparamssub = int(sys.argv[4+nparams]) 
-    paramssub = np.array( [ sys.argv[4+nparams+1+i] for i in range(nparamssub) ] )
-  data        = loaddata(nruns, pathfileprefix)
-  neps        = data[0]['N'] # number of data points
-  table       = createtable(data, params, neps)
-  tableavgstd = createtableavg(table, nruns, neps)
+  tablefilename = pathfileprefix+"perftable.plot"
+  if not os.path.isfile(tablefilename):
+    # Produce and dump the averaged table first
+    data        = loaddata(nruns, pathfileprefix)
+    neps        = data[0]['N'] # number of data points
+    table       = createtable(data, params, neps)
+    tableavgstd = createtableavg(table, nruns, neps)
   
+    fs           = open(tablefilename, "wb")
+    pickle.dump(tableavgstd, fs)
+  else:
+    tableavgstd = pickle.load(open(tablefilename, "rb"))
+
+  if (len(sys.argv)==4+nparams):
+    return
+  # If a subset of parameters provided, then produce a table 
+  # with respect to those parameters
+  nparamssub = int(sys.argv[4+nparams]) 
+  paramssub = np.array( [ sys.argv[4+nparams+1+i] for i in range(nparamssub) ] )
   perftable = performancevsparams(tableavgstd, params, paramssub)
   
   print perftable    
