@@ -57,9 +57,9 @@ def main():
   probconfig['ftype']   = args.ftype
   rwprob1                  = randommdp.RandomMDP(probconfig)
 
-  perf      = mdp.PerformanceMeasure(probconfig, rwprob1)
   print("Running algorithm " + algname + ", runseed: " + str(args.runseed) )
   for config in configs:
+    perf      = mdp.PerformanceMeasure(probconfig, rwprob1)
     config['ftype']       = args.ftype
     config['nf']          = rwprob1.nf
     alg                   = algs[algname](config)

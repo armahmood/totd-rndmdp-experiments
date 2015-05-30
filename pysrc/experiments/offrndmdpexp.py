@@ -51,7 +51,7 @@ def main():
 
   configalgpathname  = args.path + args.algname + "/configalg.pkl"
   cf              = open(configalgpathname, 'rb')
-  configsalg      = pickle.load(cf)  
+  configsalg      = pickle.load(cf)
     
   filepathname  = args.path + args.algname   +\
                   "/mdpseed_"  + str(args.mdpseed)   + "_"\
@@ -72,9 +72,9 @@ def main():
   configprob['mdpseed'] = args.mdpseed
   prob                  = offrandommdp.OffRandomMDP(configprob)
 
-  perf      = mdp.PerformanceMeasure(configprob, prob)
   print("Running algorithm " + args.algname + ", runseed: " + str(args.runseed) )
   for config in configsalg:
+    perf      = mdp.PerformanceMeasure(configprob, prob)
     config.update(configprob)
     alg                   = algs[args.algname](config)
     config['runseed']     = args.runseed
