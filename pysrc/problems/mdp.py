@@ -31,6 +31,14 @@ class MDP(object):
     self.Gamma      = params['Gamma'] # diagonal matrix of state-dependent gammas
     self.mdpseed    = params['mdpseed'] # seed to generate mdps
     self.rdmdp      = np.random.RandomState(self.mdpseed)
+
+    if type(self.initsdist)==str: 
+      self.initsdistname = self.initsdist
+      if self.initsdistname=='statemiddle':
+        self.initsdist= np.zeros(self.ns)
+        self.initsdist[(self.ns-1)/2] = 1.
+    else:
+      self.initsdistname = None
     
     self.Pssa       = self.getPssa()
     self.Rssa       = self.getRssa()
@@ -45,8 +53,8 @@ class MDP(object):
       self.tpol       = self.bpol
       (self.Psst, self.exprt) = (self.Pssb, self.exprb)
     
-    self.Phi                = getPhi(self.ftype, self.ns, self.nf, rndobj=self.rdmdp)
-    self.dsb                = steadystateprob(self.Pssb)
+    self.Phi                = self.getPhi(self.ftype, self.ns, self.nf, rndobj=self.rdmdp)
+    self.dsb                = self.steadystateprob(self.Pssb)
     if self.initsdist=='steadystate': self.initsdist = self.dsb
 
   def getPssa(self, params):
@@ -63,16 +71,18 @@ class MDP(object):
 
   def initTrajectory(self, runseed):
     self.rdrun    = np.random.RandomState(runseed)
-    if self.initsdist=='statezero':
+    if self.initsdistname=='statezero':
       self.s  = 0
+    elif self.initsdistname=='statemiddle':
+      self.s  = (self.ns-1)/2
     else:
       self.s  = sampleFrom(self.initsdist, self.rdrun)
 
   def step(self):
-    a = 0 if self.na==1 else getAction(self.bpol, self.s, self.rdrun)
-    snext   = getNextState(self.Pssa, self.s, a, self.rdrun)
-    noise   = self.rdmdp.normal(0, self.Rstd) if self.Rstd>0 else 0.
-    R       = getReward(self.Rssa, self.s, snext, a) + noise
+    a = 0 if self.na==1 else self.getAction(self.bpol, self.s, self.rdrun)
+    snext   = self.getNextState(self.Pssa, self.s, a, self.rdrun)
+    noise   = self.rdrun.normal(0, self.Rstd) if self.Rstd>0 else 0.
+    R       = self.getReward(self.Rssa, self.s, snext, a) + noise
     phi     = self.Phi[self.s]
     phinext = self.Phi[snext]
     g       = self.Gamma[self.s, self.s]
@@ -86,6 +96,58 @@ class MDP(object):
   def getRho(self, s, a):
     return self.tpol[s,a]/self.bpol[s,a]
 
+  def isTerminal(self):
+    return self.Gamma[self.s, self.s] == 0.0
+  
+  def getPhi(self, ftype, ns, nf=None, rndobj=None):
+    Phi = 0.0
+    if ftype=='tabular':
+      Phi = np.eye(ns)
+    elif ftype=='binary':
+      nf = int(np.ceil(np.log(ns+1)/np.log(2)))
+      Phi = np.zeros((ns, nf))
+      for i in range(ns):
+        for j in range(nf):
+          Phi[i, nf-j-1] = ((i+1)>>j) & 1
+        a = sum(Phi[i,]*Phi[i,])
+        Phi[i,] = Phi[i,]/np.sqrt(a)
+    elif ftype=='normal':
+      Phi = np.zeros((ns, nf))
+      for i in range(ns):
+        for j in range(nf):
+          Phi[i, j] = rndobj.normal(0, 1)
+        a = sum(Phi[i,]*Phi[i,])
+        Phi[i,] = Phi[i,]/np.sqrt(a)
+    return Phi    
+
+  def getAction(self, pol, s, rndobj):
+    rndnum = rndobj.uniform(0, 1)
+    return mpl.mlab.find(rndnum<np.cumsum(pol[s,:]))[0]
+  
+  def getNextState(self, Pssa, s, a, rndobj):
+    rndnum = rndobj.uniform(0, 1)
+    return mpl.mlab.find(rndnum<np.cumsum(Pssa[s,:,a]))[0]
+  
+  def getReward(self, Rssa, s, snext, a):
+    return Rssa[s,snext,a]
+
+  @staticmethod
+  def getFixedPoint(Pss, ExpR, Phi, ds, Gamma, Lmbda):
+    (ns, ns) = np.shape(Pss)
+    D = np.diag(ds)
+    ImPGLinv = pl.inv(np.eye(ns)- np.dot(Pss, np.dot(Gamma, Lmbda)))
+    PhiTD = np.dot(Phi.T, D)
+    ImPG = np.eye(ns) - np.dot(Pss, Gamma)
+    A = np.dot(np.dot(PhiTD, ImPGLinv), np.dot(ImPG, Phi))
+    b = np.dot(PhiTD, np.dot(ImPGLinv, ExpR))
+    thstar = np.dot(pl.inv(A), b)
+    return thstar
+
+  def steadystateprob(self, Pss):
+    (eigvals, eigvecs) = pl.eig(Pss.T)
+    eigi = np.argmax(eigvals)
+    diotas = eigvecs[:,eigi]/sum(eigvecs[:,eigi])
+    return np.real(diotas)
 
 ## general ergodic MDP, general gamma 
 ## Pssa is of s X s' X a form
@@ -111,34 +173,6 @@ def getPolInducedModel(Pssa, Rssa, pol):
 
     return (Pss, ExpR)
      
-def getPhi(ftype, ns, nf=None, rndobj=None):
-  if ftype=='tabular':
-    Phi = np.eye(ns)
-    return Phi
-  if ftype=='binary':
-    nf = int(np.ceil(np.log(ns+1)/np.log(2)))
-    Phi = np.zeros((ns, nf))
-    for i in range(ns):
-      for j in range(nf):
-        Phi[i, nf-j-1] = ((i+1)>>j) & 1
-      a = sum(Phi[i,]*Phi[i,])
-      Phi[i,] = Phi[i,]/np.sqrt(a)
-    return Phi
-  if ftype=='normal':
-    Phi = np.zeros((ns, nf))
-    for i in range(ns):
-      for j in range(nf):
-        Phi[i, j] = rndobj.normal(0, 1)
-      a = sum(Phi[i,]*Phi[i,])
-      Phi[i,] = Phi[i,]/np.sqrt(a)
-    return Phi    
-  
-def steadystateprob(Pss):
-  (eigvals, eigvecs) = pl.eig(Pss.T)
-  eigi = np.argmax(eigvals)
-  diotas = eigvecs[:,eigi]/sum(eigvecs[:,eigi])
-  return np.real(diotas)
-
 def followon(Pss, startstatedist):
   (ns, ns) = np.shape(Pss)
   return np.dot(pl.inv(np.eye(ns) - Pss.T), startstatedist)
@@ -165,17 +199,6 @@ def getExpR(Rsa, pol):
   for i in range(ns): ExpR[i] = np.dot(pol[i,], Rsa[i,])
   return ExpR
 
-def getFixedPoint(Pss, ExpR, Phi, ds, Gamma, Lmbda):
-  (ns, ns) = np.shape(Pss)
-  D = np.diag(ds)
-  ImPGLinv = pl.inv(np.eye(ns)- np.dot(Pss, np.dot(Gamma, Lmbda)))
-  PhiTD = np.dot(Phi.T, D)
-  ImPG = np.eye(ns) - np.dot(Pss, Gamma)
-  A = np.dot(np.dot(PhiTD, ImPGLinv), np.dot(ImPG, Phi))
-  b = np.dot(PhiTD, np.dot(ImPGLinv, ExpR))
-  thstar = np.dot(pl.inv(A), b)
-  return thstar
-
 def getRandomlySampledPolicy(ns, na, rndobj, coverage=True):
   pol = np.reshape(np.array([rndobj.uniform(0, 1) + coverage*10**-15 for i in range(ns*na)]), (ns, na) )
   pol = np.array([ pol[i]/sum(pol[i]) for i in range(ns) ])
@@ -192,18 +215,6 @@ def getSkewedPolicy1(ns, na, rndobj):
     if na>1: pol[i,:] = 0.01/(na-1)
     pol[i, a] = 0.99
   return pol
-
-def getAction(pol, s, rndobj):
-  rndnum = rndobj.uniform(0, 1)
-  return mpl.mlab.find(rndnum<np.cumsum(pol[s,:]))[0]
-
-def getNextState(Pssa, s, a, rndobj):
-  rndnum = rndobj.uniform(0, 1)
-  return mpl.mlab.find(rndnum<np.cumsum(Pssa[s,:,a]))[0]
-
-def getReward(Rssa, s, snext, a):
-  
-  return Rssa[s,snext,a]
     
 def sampleFrom(dist, rndobj):
   rndnum = rndobj.uniform(0, 1)
@@ -226,12 +237,22 @@ class PerformanceMeasure(object):
     self.T            = params['T'] # number of total steps
     self.N            = params['N'] # number of data points to store
     self.Phi          = prob.Phi
-    self.thstar       = getFixedPoint(prob.Pssb, prob.exprb, prob.Phi, prob.dsb, prob.Gamma, 1.)
+    self.prob         = prob
+    if 'offpolicy' in params and params['offpolicy']==True:
+      self.Pss             = prob.Psst
+      self.expr            = prob.exprt
+    else:
+      self.Pss             = prob.Pssb
+      self.expr            = prob.exprb      
+    self.thstar       = prob.getFixedPoint(self.Pss, self.expr, prob.Phi, prob.dsb, prob.Gamma, 1.)
     self.VTrueProj    = np.dot(prob.Phi, self.thstar)
     self.D            = np.diag(prob.dsb)
     self.normFactor   = np.dot(self.VTrueProj, np.dot(self.D, self.VTrueProj))
     self.MSPVE          = np.zeros(self.N)
-    
+
+  def getThstarMSPBE(self, Lmbda):
+    return self.prob.getFixedPoint(self.Pss, self.expr, self.Phi, self.prob.dsb, self.prob.Gamma, Lmbda)
+  
   def calcMSPVE(self, alg, t): # t is the number of the current step
     index               = t*self.N/self.T 
     msediff             = np.dot(self.Phi, alg.estimate()) - self.VTrueProj

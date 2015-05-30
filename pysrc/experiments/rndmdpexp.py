@@ -55,16 +55,16 @@ def main():
   probconfig            = copy.copy(configs[0])
   probconfig['mdpseed'] = args.mdpseed
   probconfig['ftype']   = args.ftype
-  prob                  = randommdp.RandomMDP(probconfig)
+  rwprob1                  = randommdp.RandomMDP(probconfig)
 
-  perf      = mdp.PerformanceMeasure(probconfig, prob)
   print("Running algorithm " + algname + ", runseed: " + str(args.runseed) )
   for config in configs:
+    perf      = mdp.PerformanceMeasure(probconfig, rwprob1)
     config['ftype']       = args.ftype
-    config['nf']          = prob.nf
+    config['nf']          = rwprob1.nf
     alg                   = algs[algname](config)
     config['runseed']     = args.runseed
-    runoneconfig(config, prob, alg, perf)
+    runoneconfig(config, rwprob1, alg, perf)
     config['error']      = perf.getNormMSPVE()
     pickle.dump(config, f, -1)
 
