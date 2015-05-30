@@ -17,13 +17,13 @@ S'<'
 NNNI-1
 I-1
 I0
-tbS'\xfc\xa9\xf1\xd2MbP?'
+tbS'{\x14\xaeG\xe1z\x84?'
 tRp7
 sS'beta'
 p8
 g4
 (g6
-S'\x00\x00\x00\x00\x00\x00\x00\x00'
+S'\xfc\xa9\xf1\xd2MbP?'
 tRp9
 sS'lmbda'
 p10

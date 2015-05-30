@@ -42,25 +42,43 @@ def createtable(data, params, neps):
     table[i,nparams:]   = data[i]['error'] # error, maybe in squared form 
   return table
 
-def createtableavg(table, nruns, neps):
+def createtablelearningcurves(table, nruns, neps):
   (tablerows, tablecols)      = np.shape(table)
   tableavgrows                = tablerows/nruns
   nparams                     = tablecols-neps
-  tableavgcols                = nparams+2
-  tableavgstd                 = np.zeros((tableavgrows, tableavgcols))
+  tableavg                    = np.zeros((tableavgrows, tablecols))
+  tablestd                    = np.zeros((tableavgrows, tablecols))
   tabletemp                   = np.zeros((tableavgrows, neps))
-  tableavgstd[:, :nparams]  = table[:tableavgrows, :nparams]
+  tableavg[:, :nparams]       = table[:tableavgrows, :nparams]
+  tablestd[:, :nparams]       = table[:tableavgrows, :nparams]
   tabletemp[:,:neps]          = table[:tableavgrows, nparams:]
   
   for i in range(1, nruns):
     tabletemp = np.concatenate((tabletemp, \
                 table[(i)*tableavgrows:(i+1)*tableavgrows, nparams:]), 1)
-    #print np.shape(tabletemp)
+  print np.shape(tabletemp)
     #print np.shape(table[(i)*tableavgrows:(i+1)*tableavgrows, nparams:])
     
-  tableavgstd[:, nparams] = np.mean(tabletemp, 1)
-  tableavgstd[:, nparams+1] = np.std(tabletemp, 1)/np.sqrt(neps*nruns)
+  tableavg[:, nparams:] = np.mean(np.reshape(tabletemp, (tableavgrows, nruns, neps)), 1)
+  tablestd[:, nparams:] = np.std(np.reshape(tabletemp, (tableavgrows, nruns, neps)), 1)/np.sqrt(nruns)
   
+  return (tableavg, tablestd)
+
+def createtableavg(table, nruns, neps, startstep=0):
+  (tablerows, tablecols)      = np.shape(table)
+  tableavgrows                = tablerows/nruns
+  nparams                     = tablecols-neps
+  tableavgcols                = nparams+2
+  tableavgstd                 = np.zeros((tableavgrows, tableavgcols))
+  tableavgstd[:, :nparams]    = table[:tableavgrows, :nparams]
+  tabletemp                   = table[:tableavgrows, (nparams+startstep):]
+  
+  for i in range(1, nruns):
+    tabletemp = np.concatenate((tabletemp, \
+                table[(i)*tableavgrows:(i+1)*tableavgrows, (nparams+startstep):]), 1)
+    
+  tableavgstd[:, nparams] = np.mean(tabletemp, 1)
+  tableavgstd[:, nparams+1] = np.std(tabletemp, 1)/np.sqrt((neps-startstep)*nruns)
   return tableavgstd
   
 def performancevsparams(tableavgstd, params, paramssub):
@@ -96,6 +114,34 @@ def performancevsparams(tableavgstd, params, paramssub):
     row += 1
     
   return perftable
+
+''' same as main, but provides an option to average out
+    only the last part of a run
+'''
+def main2(nruns, pathfileprefix, nparams, params, nparamssub, paramssub, startstep):
+  params        = np.array(params)
+  paramssub     = np.array(paramssub)
+  tablefilename = pathfileprefix+"perftable.plot"
+  if not os.path.isfile(tablefilename):
+    # Produce and dump the averaged table first
+    data        = loaddata(nruns, pathfileprefix)
+    neps        = data[0]['N'] # number of data points
+    table       = createtable(data, params, neps)
+    tableavgstd = createtableavg(table, nruns, neps, startstep)
+  
+    fs           = open(tablefilename, "wb")
+    pickle.dump(tableavgstd, fs)
+  else:
+    tableavgstd = pickle.load(open(tablefilename, "rb"))
+ 
+  perftable = performancevsparams(tableavgstd, params, paramssub)
+  
+  print perftable    
+  fsname    = pathfileprefix+'perfvs'
+  for i in range(len(paramssub)): fsname += paramssub[i]
+  fsname    += ".plot"
+  fs           = open(fsname, "wb")
+  pickle.dump(perftable, fs)
   
 def main():
 

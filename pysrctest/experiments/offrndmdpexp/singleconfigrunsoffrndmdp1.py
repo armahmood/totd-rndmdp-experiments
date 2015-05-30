@@ -29,7 +29,7 @@ def onealg(alg, prob, nrunseeds, N, config):
 
 def main():
   ns          = 10
-  nrunseeds    = 20
+  nrunseeds    = 5
   N           = 500
   gamma   = 0.99 
   config     = \
@@ -51,22 +51,22 @@ def main():
                    'bpoltype'   : 'random',
                    'tpoltype'   : 'skewed',
                    }
-  config.update({'alpha':0.01, 'beta':0.0, 'lmbda':0.5})            
+  config.update({'alpha':0.01, 'beta':0.0, 'lmbda':0.9})            
   prob = OffRandomMDP(config)
   perf1mean = onealg(GTD, prob, nrunseeds, N, config)         
-  config.update({'eta':0.01, 'initd':10.0, 'lmbda':0.0})            
-  perf2mean = onealg(WTD, prob, nrunseeds, N, config)         
-  config.update({'inita':5, 'lmbda':0.8})            
-  perf3mean = onealg(WISLSTD, prob, nrunseeds, N, config)         
-  config.update({'inita':5., 'lmbda':0.9})            
-  perf4mean = onealg(OLSTD2, prob, nrunseeds, N, config)         
-  config.update({'inita':10., 'lmbda':0.0})            
-  perf5mean = onealg(OISLSTD, prob, nrunseeds, N, config)         
+#   config.update({'eta':0.01, 'initd':10.0, 'lmbda':0.0})            
+#   perf2mean = onealg(WTD, prob, nrunseeds, N, config)         
+#   config.update({'inita':5, 'lmbda':0.8})            
+#   perf3mean = onealg(WISLSTD, prob, nrunseeds, N, config)         
+#   config.update({'inita':5., 'lmbda':0.9})            
+#   perf4mean = onealg(OLSTD2, prob, nrunseeds, N, config)         
+#   config.update({'inita':10., 'lmbda':0.0})            
+#   perf5mean = onealg(OISLSTD, prob, nrunseeds, N, config)         
   ppl.plot(np.mean(perf1mean, 0), label='gtd')
-  ppl.plot(np.mean(perf2mean, 0), label='wtd')
-  ppl.plot(np.mean(perf3mean, 0), label='wislstd')
-  ppl.plot(np.mean(perf4mean, 0), label='olstd2')
-  ppl.plot(np.mean(perf5mean, 0), label='oislstd')
+#   ppl.plot(np.mean(perf2mean, 0), label='wtd')
+#   ppl.plot(np.mean(perf3mean, 0), label='wislstd')
+#   ppl.plot(np.mean(perf4mean, 0), label='olstd2')
+#   ppl.plot(np.mean(perf5mean, 0), label='oislstd')
   ppl.ylim([0, 1])
   #ppl.yscale('log')
   ppl.legend()

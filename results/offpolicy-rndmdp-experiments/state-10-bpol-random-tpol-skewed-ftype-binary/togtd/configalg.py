@@ -2,7 +2,7 @@
 import numpy as np
 import cPickle as pickle
 
-alphas    = 10**np.arange(-5, -1.9, .25)
+alphas    = 10**np.arange(-6, 0.1, .25)
 betas     = np.concatenate(([0], 10**np.arange(-3, -0.9, 1.)))
 lms       = np.concatenate((np.arange(0, .9, .1), np.arange(.9, 1.01, .01)))
 configs     = [

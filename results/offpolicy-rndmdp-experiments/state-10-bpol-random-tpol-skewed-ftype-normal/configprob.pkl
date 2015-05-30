@@ -7,12 +7,12 @@ sS'numzerogs'
 p4
 I2
 sS'N'
-I500
+I5000
 sS'Rstd'
 p5
 F0
 sS'T'
-I500
+I5000
 sS'initsdist'
 p6
 S'statezero'

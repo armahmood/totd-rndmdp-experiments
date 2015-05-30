@@ -4,7 +4,7 @@ import cPickle as pickle
   
 def main():
   ns          = 10
-  N           = 500
+  N           = 5000
   gamma       = 0.99
   configs     = \
                    {

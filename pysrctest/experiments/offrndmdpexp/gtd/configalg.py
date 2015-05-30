@@ -2,9 +2,8 @@
 import numpy as np
 import cPickle as pickle
 
-  
-alphas    = np.array([0.001])
-betas     = np.array([0.0])
+alphas    = np.array([0.01])
+betas     = np.array([0.001])
 lms       = np.array([0.9])
 configs     = [
                  {
