@@ -123,7 +123,7 @@ def performancevsparams(tableavgstd, params, paramssub):
 def main2(nruns, pathfileprefix, nparams, params, nparamssub, paramssub, startstep):
   params            = np.array(params)
   paramssub         = np.array(paramssub)
-  tablefilename     = pathfileprefix+"perftable.plot"
+  tablefilename     = pathfileprefix+"perftable.plot.pkl"
   if not os.path.isfile(tablefilename):
     # Produce and dump the averaged table first
     data        = loaddata(nruns, pathfileprefix)
@@ -141,7 +141,7 @@ def main2(nruns, pathfileprefix, nparams, params, nparamssub, paramssub, startst
   print perftable    
   fsname    = pathfileprefix+'perfvs'
   for i in range(len(paramssub)): fsname += paramssub[i]
-  fsname    += ".plot"
+  fsname    += ".plot.pkl"
   fs           = open(fsname, "wb")
   pickle.dump(perftable, fs)
   
@@ -152,7 +152,7 @@ def main():
     pathfileprefix   = sys.argv[2]
     nparams = int(sys.argv[3])
     params = np.array([ sys.argv[4+i] for i in range(nparams) ])
-  tablefilename = pathfileprefix+"perftable.plot"
+  tablefilename = pathfileprefix+"perftable.plot.pkl"
   if not os.path.isfile(tablefilename):
     # Produce and dump the averaged table first
     data        = loaddata(nruns, pathfileprefix)
@@ -176,7 +176,7 @@ def main():
   print perftable    
   fsname    = pathfileprefix+'perfvs'
   for i in range(len(paramssub)): fsname += paramssub[i]
-  fsname    += ".plot"
+  fsname    += ".plot.pkl"
   fs           = open(fsname, "wb")
   pickle.dump(perftable, fs)
 
