@@ -13,7 +13,7 @@ from pysrc.plot import plotdataprocess
 import cPickle as pickle
 
 def plotperfvslmbda(pathfileprefix, label):
-  plotfilename      = pathfileprefix+"perfvslmbda.plot"
+  plotfilename      = pathfileprefix+"perfvslmbda.plot.pkl"
   if not os.path.isfile(plotfilename):
     sys.argv  = ["", "10", pathfileprefix, 
                  "2", "alpha", "lmbda",

@@ -77,8 +77,10 @@ def createtableavg(table, nruns, neps, startstep=0):
     tabletemp = np.concatenate((tabletemp, \
                 table[(i)*tableavgrows:(i+1)*tableavgrows, (nparams+startstep):]), 1)
     
-  tableavgstd[:, nparams] = np.mean(tabletemp, 1)
-  tableavgstd[:, nparams+1] = np.std(tabletemp, 1)/np.sqrt((neps-startstep)*nruns)
+  r, c                      = np.shape(tabletemp)
+  tabletemp2                = np.mean(np.reshape(tabletemp, (r, c/nruns, nruns),1), 1) 
+  tableavgstd[:, nparams]   = np.mean(tabletemp2, 1)
+  tableavgstd[:, nparams+1] = np.std(tabletemp2, 1)/np.sqrt(nruns)
   return tableavgstd
   
 def performancevsparams(tableavgstd, params, paramssub):
@@ -119,9 +121,9 @@ def performancevsparams(tableavgstd, params, paramssub):
     only the last part of a run
 '''
 def main2(nruns, pathfileprefix, nparams, params, nparamssub, paramssub, startstep):
-  params        = np.array(params)
-  paramssub     = np.array(paramssub)
-  tablefilename = pathfileprefix+"perftable.plot"
+  params            = np.array(params)
+  paramssub         = np.array(paramssub)
+  tablefilename     = pathfileprefix+"perftable.plot"
   if not os.path.isfile(tablefilename):
     # Produce and dump the averaged table first
     data        = loaddata(nruns, pathfileprefix)

@@ -69,8 +69,11 @@ class Test(unittest.TestCase):
                       2+mse[alpha==alphas,beta==betas,lmbda==lmbdas],\
                       3+mse[alpha==alphas,beta==betas,lmbda==lmbdas],\
                       ])
-          tableavgstd[i,3] = np.mean(temp)
-          tableavgstd[i,4] = np.std(temp)/np.sqrt(2*nruns)
+          temp2            = np.mean(np.reshape(temp, (nruns,2)), 1)
+          print temp
+          print temp2 
+          tableavgstd[i,3] = np.mean(temp2)
+          tableavgstd[i,4] = np.std(temp2)/np.sqrt(nruns)
           i += 1
     return {'alphas':alphas, 'betas':betas, 
             'lmbdas':lmbdas, 'error':mse, 
@@ -79,12 +82,12 @@ class Test(unittest.TestCase):
 
 
   def tableexample1explicit(self):
-    tableavgstd2 = np.array([[0., 0., 0., 2.1, 0.33335833], 
-        [0., 1.0, 0., 2.4, 0.33335833], 
-        [0.5, 0., 0., 2.2, 0.33335833], 
-        [0.5, 1.0, 0., 2.5, 0.33335833], 
-        [1.0, 0., 0., 2.3, 0.33335833], 
-        [1.0, 1.0, 0., 2.6, 0.33335833]])
+    tableavgstd2 = np.array([[0., 0., 0., 2.1, 0.47140452079103173], 
+        [0., 1.0, 0., 2.4, 0.47140452079103173], 
+        [0.5, 0., 0., 2.2, 0.47140452079103173], 
+        [0.5, 1.0, 0., 2.5, 0.47140452079103173], 
+        [1.0, 0., 0., 2.3, 0.47140452079103173], 
+        [1.0, 1.0, 0., 2.6, 0.47140452079103173]])
     perfvsalpha       = np.array(
                            [[0,    2.1],
                             [0.5,  2.2],
@@ -120,6 +123,8 @@ class Test(unittest.TestCase):
     tableavgstd   = rets['tableavgstd']
     rets          = self.tableexample1explicit()
     tableavgstd2  = rets['tableavgstd2']
+    print tableavgstd
+    print tableavgstd2
     assert((abs(tableavgstd-tableavgstd2)<0.000001).all())
   
   def testcreatetable(self):
